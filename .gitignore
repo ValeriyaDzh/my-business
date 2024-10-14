@@ -1,0 +1,14 @@
+# Environments
+.venv
+*.env
+
+# Byte-compiled / optimized / DLL files
+__pycache__
+.DS_Store
+
+# Logger
+*.log
+
+# Coverage reports
+htmlcov/
+.coverage
