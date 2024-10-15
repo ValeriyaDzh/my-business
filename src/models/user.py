@@ -9,10 +9,11 @@ class User(Base):
     __tablename__ = "user"
 
     id: Mapped[uuid_pk]
-    account: Mapped[str] = mapped_column(String, unique=True)
+    email: Mapped[str] = mapped_column(String, unique=True)
     first_name: Mapped[str]
     last_name: Mapped[str]
     hashed_password: Mapped[str]
+    is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     company_id: Mapped[str] = mapped_column(
         ForeignKey("company.id", ondelete="CASCADE")
