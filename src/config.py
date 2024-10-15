@@ -1,5 +1,6 @@
 from dotenv import load_dotenv, find_dotenv
 
+from redis import Redis
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -20,10 +21,22 @@ class DatabaseSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="DB_", extra="ignore")
 
     @property
-    def URL(self):
+    def URL(self) -> SecretStr:
         return SecretStr(
             f"{self.PROTOCOL}://{self.USER}:{self.PASSWORD.get_secret_value()}@{self.HOST}:{self.PORT}/{self.NAME}"
         )
+
+
+class RedisSettings(BaseSettings):
+
+    HOST: str
+    PORT: int
+
+    model_config = SettingsConfigDict(env_prefix="REDIS_", extra="ignore")
+
+    @property
+    def REDIS(self) -> Redis:
+        return Redis(self.HOST, self.PORT, db=0)
 
 
 class JWTSettings(BaseSettings):
@@ -50,6 +63,7 @@ class Settings(BaseSettings):
     db: DatabaseSettings = DatabaseSettings()
     jwt: JWTSettings = JWTSettings()
     smtp: SMTPSettings = SMTPSettings()
+    cache: RedisSettings = RedisSettings()
 
 
 settings = Settings()
