@@ -1,5 +1,6 @@
 from functools import wraps
 from typing import AsyncGenerator, Any
+from types import TracebackType
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,22 +10,31 @@ from src.utils.custom_types import AsyncFunc
 
 
 class UnitOfWork:
-    def __init__(self):
+    def __init__(self) -> None:
         self.session_factory = async_session_maker
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> None:
         self.session: AsyncSession = self.session_factory()
         self.company_repository = CompanyRepository(self.session)
         self.user_repository = UserRepository(self.session)
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
+        if not exc_type:
+            await self.commit()
+        else:
+            await self.rollback()
         await self.session.close()
 
-    async def commit(self):
+    async def commit(self) -> None:
         await self.session.commit()
 
-    async def rollback(self):
+    async def rollback(self) -> None:
         await self.session.rollback()
 
 
