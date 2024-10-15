@@ -1,0 +1,61 @@
+import smtplib
+import logging
+
+from email.message import EmailMessage
+
+from src.config import settings
+
+logger = logging.getLogger(__name__)
+
+
+class MailService:
+
+    def __init__(self, email: str, password: str, host: str, port: int):
+        self.email = email
+        self.password = password
+        self.host = host
+        self.port = port
+
+    async def send_verify_email(self, recipient: str, invite_token: int):
+
+        subject = f"{invite_token} - registration confirmation code on the platform"
+        verify_email_template = f"""
+                    <div>
+                        <h3> Registration</h3>
+                        <br>
+                        <p>Thank you for registering your company on the MyBusiness corporate platform! 
+                        To confirm, enter the code on page</p>
+                        <a>
+                            {invite_token}
+                        </a>
+                    </div>
+                """
+
+        await self._send(recipient, subject, verify_email_template)
+
+    async def _send(
+        self, email_to: str, subject: str, template: str, subtype: str = "html"
+    ):
+        try:
+            with smtplib.SMTP_SSL(self.host, self.port) as server:
+                logger.debug(f"Preparing mail from...")
+                server.login(self.email, self.password)
+                email = EmailMessage()
+                email["Subject"] = subject
+                email["From"] = self.email
+                email["To"] = email_to
+
+                email.set_content(template, subtype=subtype)
+                server.send_message(email)
+                logger.debug(f"Mail send to {email_to}")
+
+        except Exception as e:
+            logger.error(f"Failed to send email: {e}")
+
+
+mail_service = MailService(
+    settings.smtp.EMAIL,
+    settings.smtp.PASSWORD.get_secret_value(),
+    settings.smtp.HOST,
+    settings.smtp.PORT,
+)
