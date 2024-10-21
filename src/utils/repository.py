@@ -20,30 +20,33 @@ class SqlAlchemyRepository:
 
     model: type[T] = None
 
-    def __init__(self, session: AsyncSession):
+    def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
-    async def add_one(self, **kwargs) -> None:
+    async def add_one(self, **kwargs: Any) -> None:
         query = insert(self.model).values(**kwargs)
         await self.session.execute(query)
 
-    async def add_one_and_get_obj(self, **kwargs) -> T:
+    async def add_one_and_get_obj(self, **kwargs: Any) -> T:
         query = insert(self.model).values(**kwargs).returning(self.model)
         obj: Result = await self.session.execute(query)
         return obj.scalar_one()
 
-    async def add_one_and_get_id(self, **kwargs) -> T:
+    async def add_one_and_get_id(self, **kwargs: Any) -> T:
         query = insert(self.model).values(**kwargs).returning(self.model.id)
         obj: Result = await self.session.execute(query)
         return obj.scalar_one()
 
     async def get_by_field(
-        self, key: str, value: str, all: bool = False,
+        self,
+        key: str,
+        value: str,
+        _all: bool = False,
     ) -> T | Sequence[T] | None:
         query = select(self.model).where(and_(getattr(self.model, key) == value))
         res: Result = await self.session.execute(query)
 
-        if all:
+        if _all:
             return res.scalars().all()
 
         return res.scalar_one_or_none()
