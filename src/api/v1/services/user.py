@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from src.models import User
 from src.utils.service import BaseService
@@ -13,10 +13,4 @@ logger = logging.getLogger(__name__)
 
 
 class UserService(BaseService):
-
-    base_repository: str = "user"
-
-    @transaction_mode
-    async def get_by_email(self, email: str) -> User | None:
-        user = await self.uow.user_repository.get_by_field("email", email)
-        return user
+    pass
