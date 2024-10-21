@@ -1,6 +1,5 @@
-import smtplib
 import logging
-
+import smtplib
 from email.message import EmailMessage
 
 from src.config import settings
@@ -34,11 +33,11 @@ class MailService:
         await self._send(recipient, subject, verify_email_template)
 
     async def _send(
-        self, email_to: str, subject: str, template: str, subtype: str = "html"
+        self, email_to: str, subject: str, template: str, subtype: str = "html",
     ):
         try:
             with smtplib.SMTP_SSL(self.host, self.port) as server:
-                logger.debug(f"Preparing mail from...")
+                logger.debug("Preparing mail from...")
                 server.login(self.email, self.password)
                 email = EmailMessage()
                 email["Subject"] = subject

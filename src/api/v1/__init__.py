@@ -3,6 +3,7 @@ __all__ = [
 ]
 
 from fastapi import APIRouter
+
 from src.api.v1.routers.signup import router as signup_router_v1
 
 router_v1 = APIRouter()

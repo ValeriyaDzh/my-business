@@ -1,4 +1,5 @@
-from typing import Annotated, Awaitable, Callable, Any
+from collections.abc import Awaitable, Callable
+from typing import Annotated, Any
 from uuid import uuid4
 
 from sqlalchemy import UUID

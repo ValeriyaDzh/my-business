@@ -1,4 +1,4 @@
-from sqlalchemy import String, Boolean, ForeignKey
+from sqlalchemy import Boolean, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.models import Base
@@ -16,5 +16,5 @@ class User(Base):
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
     company_id: Mapped[str] = mapped_column(
-        ForeignKey("company.id", ondelete="CASCADE")
+        ForeignKey("company.id", ondelete="CASCADE"),
     )

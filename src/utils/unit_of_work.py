@@ -1,6 +1,7 @@
+from collections.abc import AsyncGenerator
 from functools import wraps
-from typing import AsyncGenerator, Any
 from types import TracebackType
+from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 

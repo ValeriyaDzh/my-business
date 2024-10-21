@@ -25,7 +25,8 @@ class SignupService(BaseService):
         token = self.token_service.generate_signup_token()
         try:
             await self.mail_service.send_verify_email(
-                recipient=email, invite_token=token
+                recipient=email,
+                invite_token=token,
             )
             self.token_service.save_signup_token(account=email, token=token)
         except Exception as e:
@@ -35,12 +36,13 @@ class SignupService(BaseService):
     async def create_company_and_admin(self, playload: SignUpComplete) -> None:
         try:
             if await self.uow.company_repository.get_by_field(
-                "name", playload.company_name
+                "name",
+                playload.company_name,
             ):
                 raise AlreadyExistsException("Company with this name is already exist")
 
             company_id = await self.uow.company_repository.add_one_and_get_id(
-                name=playload.company_name
+                name=playload.company_name,
             )
             logger.debug(f"Created company {playload.company_name} - {company_id}")
 
@@ -51,7 +53,7 @@ class SignupService(BaseService):
             logger.debug(f"Prepared user: {data_dict}")
 
             created_user = await self.uow.user_repository.add_one_and_get_obj(
-                **data_dict | {"is_admin": True, "company_id": company_id}
+                **data_dict | {"is_admin": True, "company_id": company_id},
             )
             logger.debug(created_user)
 

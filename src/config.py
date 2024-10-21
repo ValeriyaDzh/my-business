@@ -1,8 +1,7 @@
-from dotenv import load_dotenv, find_dotenv
-
-from redis import Redis
+from dotenv import find_dotenv, load_dotenv
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from redis import Redis
 
 load_dotenv(find_dotenv(".dev.env"))
 
@@ -23,7 +22,7 @@ class DatabaseSettings(BaseSettings):
     @property
     def URL(self) -> SecretStr:
         return SecretStr(
-            f"{self.PROTOCOL}://{self.USER}:{self.PASSWORD.get_secret_value()}@{self.HOST}:{self.PORT}/{self.NAME}"
+            f"{self.PROTOCOL}://{self.USER}:{self.PASSWORD.get_secret_value()}@{self.HOST}:{self.PORT}/{self.NAME}",
         )
 
 

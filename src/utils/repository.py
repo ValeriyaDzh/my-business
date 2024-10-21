@@ -1,9 +1,9 @@
 import logging
 from collections.abc import Sequence
+from typing import TYPE_CHECKING, Any, TypeVar
 from uuid import UUID
-from typing import TYPE_CHECKING, TypeVar, Any
 
-from sqlalchemy import insert, select, and_, update, delete
+from sqlalchemy import and_, delete, insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models import Base
@@ -38,7 +38,7 @@ class SqlAlchemyRepository:
         return obj.scalar_one()
 
     async def get_by_field(
-        self, key: str, value: str, all: bool = False
+        self, key: str, value: str, all: bool = False,
     ) -> T | Sequence[T] | None:
         query = select(self.model).where(and_(getattr(self.model, key) == value))
         res: Result = await self.session.execute(query)

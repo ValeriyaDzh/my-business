@@ -1,15 +1,14 @@
 from fastapi import APIRouter, Depends, status
 from pydantic import EmailStr
 
-from src.schemas.signup import SignUp, Message, VerifyEmail, SignUpComplete
-from src.api.v1.services import UserService, SignupService
-from src.utils.mail_util import mail_service
+from src.api.v1.services import SignupService
+from src.schemas.signup import Message, SignUpComplete, VerifyEmail
 
 router = APIRouter()
 
 
 @router.get(
-    "/check_account/{account}/", status_code=status.HTTP_200_OK, response_model=Message
+    "/check_account/{account}/", status_code=status.HTTP_200_OK, response_model=Message,
 )
 async def check_account(
     account: EmailStr,
@@ -21,10 +20,10 @@ async def check_account(
 
 @router.post("/sign-up/", status_code=status.HTTP_200_OK)
 async def sign_up(
-    email_token: VerifyEmail, signup_service: SignupService = Depends(SignupService)
+    email_token: VerifyEmail, signup_service: SignupService = Depends(SignupService),
 ):
     return signup_service.token_service.verify_signup_token(
-        email_token.account, email_token.invite_token
+        email_token.account, email_token.invite_token,
     )
 
 
@@ -34,7 +33,7 @@ async def sign_up(
     response_model=Message,
 )
 async def sign_up_complete(
-    data: SignUpComplete, signup_service: SignupService = Depends(SignupService)
+    data: SignUpComplete, signup_service: SignupService = Depends(SignupService),
 ):
     await signup_service.create_company_and_admin(data)
     return Message(message="Done...")

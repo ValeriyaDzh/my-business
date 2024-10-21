@@ -2,8 +2,7 @@ from passlib.context import CryptContext
 
 
 class Password:
-    """
-    Utility class for handling password operations.
+    """Utility class for handling password operations.
     """
 
     PWD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")

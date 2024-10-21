@@ -1,3 +1,3 @@
-__all__ = ["get_async_session", "async_session_maker"]
+__all__ = ["async_session_maker", "get_async_session"]
 
-from src.database.db import get_async_session, async_session_maker
+from src.database.db import async_session_maker, get_async_session
