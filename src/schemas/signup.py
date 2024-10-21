@@ -1,4 +1,6 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_validator
+
+from src.utils.auth import Password
 
 
 class Message(BaseModel):
@@ -20,3 +22,8 @@ class SignUpComplete(BaseModel):
     first_name: str
     last_name: str
     company_name: str
+
+    @field_validator("password", mode="after")
+    def hash_password(cls, value):
+        hashed_password = Password.hash(value)
+        return hashed_password
