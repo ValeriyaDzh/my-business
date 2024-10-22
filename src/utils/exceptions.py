@@ -17,5 +17,11 @@ class DatabaseException(HTTPException):
         detail: str = "Server Error...Something went wrong...Please try again later",
     ):
         super().__init__(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=detail,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=detail,
         )
+
+
+class UnauthorizedException(HTTPException):
+    def __init__(self, detail: str = "Could not validate credentials"):
+        super().__init__(status_code=status.HTTP_401_UNAUTHORIZED, detail=detail)
