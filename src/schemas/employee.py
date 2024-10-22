@@ -1,6 +1,10 @@
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, EmailStr
 
 from src.utils.auth import Password
+
+
+class Registration(BaseModel):
+    password: str
 
 
 class Employee(BaseModel):
