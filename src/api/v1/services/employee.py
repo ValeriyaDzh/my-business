@@ -5,7 +5,9 @@ from src.utils.auth import Password, TokenService
 from src.utils.mail_util import MailService, mail_service
 from src.utils.exceptions import (
     AlreadyExistsException,
+    BadRequestException,
     DatabaseException,
+    NotFoundException,
     ForbiddenException,
 )
 from src.utils.service import BaseService
@@ -58,3 +60,29 @@ class EmployeeService(BaseService):
         except Exception as e:
             logger.error(f"Database error: {e}")
             raise DatabaseException
+
+    @transaction_mode
+    async def registration(self, password: str, token: str) -> None:
+
+        decoded_token = self.token_service.decode_jwt(token)
+        email = decoded_token.get("email")
+        company_id = decoded_token.get("company_id")
+
+        employee = await self.uow.user_repository.get_by_email(email)
+
+        if not employee:
+            raise NotFoundException("User not found")
+
+        if Password.verify(password, employee.hashed_password):
+            # if company_id == employee.company_id:
+            try:
+                await self.uow.user_repository.update_one_by_id(
+                    employee.id, is_verified=True
+                )
+
+            except Exception as e:
+                logger.error(f"Database error: {e}")
+                raise DatabaseException
+
+        else:
+            raise BadRequestException("Incorrect password")
