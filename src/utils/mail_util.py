@@ -9,13 +9,13 @@ logger = logging.getLogger(__name__)
 
 class MailService:
 
-    def __init__(self, email: str, password: str, host: str, port: int):
+    def __init__(self, email: str, password: str, host: str, port: int) -> None:
         self.email = email
         self.password = password
         self.host = host
         self.port = port
 
-    async def send_verify_email(self, recipient: str, invite_token: int):
+    async def send_verify_email(self, recipient: str, invite_token: int) -> None:
 
         subject = f"{invite_token} - registration confirmation code on the platform"
         verify_email_template = f"""
@@ -29,12 +29,31 @@ class MailService:
                         </a>
                     </div>
                 """
-
         await self._send(recipient, subject, verify_email_template)
 
+    async def send_invite_email(
+        self, recipient: str, password: str, invite_url: str
+    ) -> None:
+
+        subject = "Registration on the company"
+        invite_email_template = f"""
+                    <div>
+                        <h3>Registration</h3>
+                        <br>
+                        <p>Your password to log in to your personal account: {password}</p>
+                        <p>To complete registration with the company, please follow the link:</p>
+                        <a href="{invite_url}">click</a>
+                    </div>
+                """
+        await self._send(recipient, subject, invite_email_template)
+
     async def _send(
-        self, email_to: str, subject: str, template: str, subtype: str = "html",
-    ):
+        self,
+        email_to: str,
+        subject: str,
+        template: str,
+        subtype: str = "html",
+    ) -> None:
         try:
             with smtplib.SMTP_SSL(self.host, self.port) as server:
                 logger.debug("Preparing mail from...")
