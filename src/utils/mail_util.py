@@ -32,7 +32,7 @@ class MailService:
         await self._send(recipient, subject, verify_email_template)
 
     async def send_invite_email(
-        self, recipient: str, password: str, invite_url: str
+        self, recipient: str, password: str, invite_url: str,
     ) -> None:
 
         subject = "Registration on the company"

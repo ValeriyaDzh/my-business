@@ -8,7 +8,7 @@ router = APIRouter()
 
 
 @router.post(
-    "/employees/create", status_code=status.HTTP_201_CREATED, response_model=Message
+    "/employees/create", status_code=status.HTTP_201_CREATED, response_model=Message,
 )
 async def create_employee(
     data: CreateEmployee,
@@ -16,7 +16,7 @@ async def create_employee(
     employee_service: EmployeeService = Depends(EmployeeService),
 ):
     await employee_service.create_and_send_invite(
-        data, request.state.is_admin, request.state.company_id
+        data, request.state.is_admin, request.state.company_id,
     )
 
     return Message(message="Invite mail has been sent")

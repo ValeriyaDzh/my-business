@@ -2,17 +2,16 @@ import logging
 
 from src.schemas.employee import CreateEmployee, UpdateEmployee
 from src.utils.auth import Password, TokenService
-from src.utils.mail_util import MailService, mail_service
 from src.utils.exceptions import (
     AlreadyExistsException,
     BadRequestException,
     DatabaseException,
-    NotFoundException,
     ForbiddenException,
+    NotFoundException,
 )
+from src.utils.mail_util import MailService, mail_service
 from src.utils.service import BaseService
 from src.utils.unit_of_work import transaction_mode
-
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +24,7 @@ class EmployeeService(BaseService):
         self.mail: MailService = mail_service
 
     async def create_and_send_invite(
-        self, playload: CreateEmployee, admin: bool, company: str
+        self, playload: CreateEmployee, admin: bool, company: str,
     ) -> None:
 
         if admin:
@@ -35,12 +34,12 @@ class EmployeeService(BaseService):
                 {
                     "email": playload.email,
                     "company_id": company,
-                }
+                },
             )
             inv_url = f"http://127.0.0.1:8000/api/v1/employees/registration/{inv_token}"
 
             await self.mail.send_invite_email(
-                playload.email, playload.password, inv_url
+                playload.email, playload.password, inv_url,
             )
         else:
             raise ForbiddenException("Don't have enough rights to make changes")
@@ -77,7 +76,7 @@ class EmployeeService(BaseService):
             # if company_id == employee.company_id:
             try:
                 await self.uow.user_repository.update_one_by_id(
-                    employee.id, is_verified=True
+                    employee.id, is_verified=True,
                 )
 
             except Exception as e:

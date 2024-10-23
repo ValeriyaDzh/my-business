@@ -1,8 +1,8 @@
 import logging
 
-from fastapi import Request, HTTPException
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse
+from fastapi.security import OAuth2PasswordBearer
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from src.api.v1.services import UserService
@@ -17,7 +17,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/api/v1/sign-in/")
 class AuthMiddleware(BaseHTTPMiddleware):
     def __init__(self, app, exclude_paths: list[str] = None):
         super().__init__(app)
-        self.exclude_paths = exclude_paths if exclude_paths else []
+        self.exclude_paths = exclude_paths or []
         self.token_service: TokenService = TokenService()
         self.user_service: UserService = UserService()
 
@@ -52,5 +52,5 @@ class AuthMiddleware(BaseHTTPMiddleware):
 
         except (UnauthorizedException, HTTPException) as exc:
             return JSONResponse(
-                status_code=exc.status_code, content={"detail": exc.detail}
+                status_code=exc.status_code, content={"detail": exc.detail},
             )

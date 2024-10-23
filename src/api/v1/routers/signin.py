@@ -12,7 +12,7 @@ async def login_for_access_token(
     signin_service: SignInService = Depends(SignInService),
 ):
     token = await signin_service.auth_and_create_token(
-        login_data.email, login_data.password
+        login_data.email, login_data.password,
     )
     return token
 

@@ -1,7 +1,7 @@
-from datetime import datetime, timedelta, UTC
-from typing import Any
 import logging
 import random
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
 from jose import jwt
 from redis import Redis
@@ -39,7 +39,7 @@ class TokenService:
         return decoded
 
     def create_access_token(
-        self, data: dict[str, Any], expires_delta: timedelta | None = None
+        self, data: dict[str, Any], expires_delta: timedelta | None = None,
     ) -> str:
         logger.debug(f"Creating token...for data {data}")
 
@@ -48,7 +48,7 @@ class TokenService:
             expire = datetime.now(UTC) + expires_delta
         else:
             expire = datetime.now(UTC) + timedelta(
-                minutes=settings.jwt.ACCESS_TOKEN_EXPIRE_MINUTES
+                minutes=settings.jwt.ACCESS_TOKEN_EXPIRE_MINUTES,
             )
         encoded_access_jwt = self._encode_jwt(payload, expire)
         logger.debug("Created")

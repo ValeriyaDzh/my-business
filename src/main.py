@@ -5,7 +5,6 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from src.api.v1 import router_v1
-
 from src.middlware.auth import AuthMiddleware
 
 

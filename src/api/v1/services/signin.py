@@ -21,7 +21,7 @@ class SignInService(BaseService):
                 "email": user.email,
                 "is_admin": user.is_admin,
                 "company_id": str(user.company_id),
-            }
+            },
         )
         return Token(access_token=access_token, token_type="Bearer")
 
@@ -31,11 +31,10 @@ class SignInService(BaseService):
 
         if user and Password.verify(password, user.hashed_password):
             return user
-        else:
-            raise UnauthorizedException(detail="Incorrect login or password")
+        raise UnauthorizedException(detail="Incorrect login or password")
 
     @transaction_mode
     async def verified_user(self, current_user: User) -> None:
         await self.uow.user_repository.update_one_by_id(
-            current_user.id, {"is_verified": True}
+            current_user.id, {"is_verified": True},
         )
