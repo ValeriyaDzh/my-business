@@ -110,7 +110,7 @@ class EmployeeService(BaseService):
 
     @transaction_mode
     async def send_change_email(
-        self, employee_id: str, admin: bool, email: str
+        self, employee_id: str, admin: bool, email: str,
     ) -> None:
 
         if admin:
@@ -153,7 +153,7 @@ class EmployeeService(BaseService):
         if employee.email != new_email:
 
             await self.uow.user_repository.update_one_by_id(
-                employee_id, email=new_email
+                employee_id, email=new_email,
             )
 
         else:

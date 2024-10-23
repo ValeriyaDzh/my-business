@@ -67,7 +67,7 @@ async def change_email(
     employee_service: EmployeeService = Depends(EmployeeService),
 ):
     await employee_service.send_change_email(
-        employee_id, request.state.is_admin, new_email
+        employee_id, request.state.is_admin, new_email,
     )
     return Message(message="Email has been sent")
 
