@@ -1,11 +1,5 @@
 from pydantic import BaseModel, EmailStr
 
-from src.utils.auth import Password
-
-
-class Registration(BaseModel):
-    password: str
-
 
 class Employee(BaseModel):
     email: EmailStr
@@ -15,3 +9,8 @@ class Employee(BaseModel):
 
 class CreateEmployee(Employee):
     password: str
+
+
+class UpdateEmployee(BaseModel):
+    first_name: str | None = None
+    last_name: str | None = None

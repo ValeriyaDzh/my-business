@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, Request, status
+from fastapi import APIRouter, Depends, Form, Request, status
 
 from src.api.v1.services import EmployeeService
 from src.schemas.base import Message
-from src.schemas.employee import CreateEmployee, Registration
+from src.schemas.employee import CreateEmployee, UpdateEmployee
 
 router = APIRouter()
 
@@ -29,8 +29,23 @@ async def create_employee(
 )
 async def registration_employee(
     token: str,
-    password: Registration,
+    password: str = Form(...),
     employee_service: EmployeeService = Depends(EmployeeService),
 ):
-    await employee_service.registration(password.password, token)
+    await employee_service.registration(password, token)
+    return Message(message="Done...")
+
+
+@router.post(
+    "/employees/{employee_id}/update",
+    status_code=status.HTTP_200_OK,
+    response_model=Message,
+)
+async def update_employee(
+    employee_id: str,
+    update_data: UpdateEmployee,
+    request: Request,
+    employee_service: EmployeeService = Depends(EmployeeService),
+):
+    await employee_service.update(employee_id, request.state.is_admin, update_data)
     return Message(message="Done...")

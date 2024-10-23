@@ -1,6 +1,6 @@
 import logging
 
-from src.schemas.employee import CreateEmployee
+from src.schemas.employee import CreateEmployee, UpdateEmployee
 from src.utils.auth import Password, TokenService
 from src.utils.mail_util import MailService, mail_service
 from src.utils.exceptions import (
@@ -86,3 +86,19 @@ class EmployeeService(BaseService):
 
         else:
             raise BadRequestException("Incorrect password")
+
+    @transaction_mode
+    async def update(self, employee_id: str, admin: bool, data: UpdateEmployee) -> None:
+
+        if admin:
+            playload = data.model_dump(exclude_none=True)
+
+            try:
+                await self.uow.user_repository.update_one_by_id(employee_id, **playload)
+
+            except Exception as e:
+                logger.error(f"Database error while update {employee_id}: {e}")
+                raise DatabaseException
+
+        else:
+            raise ForbiddenException("Don't have enough rights to make changes")
