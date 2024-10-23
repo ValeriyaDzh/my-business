@@ -24,7 +24,10 @@ class EmployeeService(BaseService):
         self.mail: MailService = mail_service
 
     async def create_and_send_invite(
-        self, playload: CreateEmployee, admin: bool, company: str,
+        self,
+        playload: CreateEmployee,
+        admin: bool,
+        company: str,
     ) -> None:
 
         if admin:
@@ -39,7 +42,9 @@ class EmployeeService(BaseService):
             inv_url = f"http://127.0.0.1:8000/api/v1/employees/registration/{inv_token}"
 
             await self.mail.send_invite_email(
-                playload.email, playload.password, inv_url,
+                playload.email,
+                playload.password,
+                inv_url,
             )
         else:
             raise ForbiddenException("Don't have enough rights to make changes")
@@ -76,7 +81,8 @@ class EmployeeService(BaseService):
             # if company_id == employee.company_id:
             try:
                 await self.uow.user_repository.update_one_by_id(
-                    employee.id, is_verified=True,
+                    employee.id,
+                    is_verified=True,
                 )
 
             except Exception as e:
@@ -101,3 +107,54 @@ class EmployeeService(BaseService):
 
         else:
             raise ForbiddenException("Don't have enough rights to make changes")
+
+    @transaction_mode
+    async def send_change_email(
+        self, employee_id: str, admin: bool, email: str
+    ) -> None:
+
+        if admin:
+            if await self.uow.user_repository.get_by_email(email):
+                raise AlreadyExistsException("This email is already in use")
+
+            employee = await self.uow.user_repository.get_by_field("id", employee_id)
+            if employee:
+
+                token = self.token_service.create_access_token(
+                    {
+                        "email": email,
+                        "employee_id": employee_id,
+                    },
+                )
+                change_email_url = (
+                    f"http://127.0.0.1:8000/api/v1/employees/change-email/{token}"
+                )
+
+                await self.mail.send_change_email(
+                    email,
+                    change_email_url,
+                )
+
+            else:
+                raise NotFoundException("Employee not found")
+
+        else:
+            raise ForbiddenException("Don't have enough rights to make changes")
+
+    @transaction_mode
+    async def change_email_confirm(self, token: str) -> None:
+
+        decoded_token = self.token_service.decode_jwt(token)
+        new_email = decoded_token.get("email")
+        employee_id = decoded_token.get("employee_id")
+
+        employee = await self.uow.user_repository.get_by_field("id", employee_id)
+
+        if employee.email != new_email:
+
+            await self.uow.user_repository.update_one_by_id(
+                employee_id, email=new_email
+            )
+
+        else:
+            raise BadRequestException("The email has already been changed")

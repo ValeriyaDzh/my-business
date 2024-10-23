@@ -28,6 +28,7 @@ exclude_paths = [
     "/auth/api/v1/sign-up",
     "/auth/api/v1/sign-up-complete",
     "/api/v1/employees/registration/",
+    "/api/v1/employees/confirm-new-email/",
 ]
 
 app.add_middleware(AuthMiddleware, exclude_paths=exclude_paths)
