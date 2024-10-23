@@ -32,7 +32,10 @@ class MailService:
         await self._send(recipient, subject, verify_email_template)
 
     async def send_invite_email(
-        self, recipient: str, password: str, invite_url: str,
+        self,
+        recipient: str,
+        password: str,
+        invite_url: str,
     ) -> None:
 
         subject = "Registration on the company"
@@ -46,6 +49,24 @@ class MailService:
                     </div>
                 """
         await self._send(recipient, subject, invite_email_template)
+
+    async def send_change_email(
+        self,
+        recipient: str,
+        change_url: str,
+    ) -> None:
+
+        subject = "Change email"
+        change_email_template = f"""
+                    <div>
+                        <h3>Email сonfirmation</h3>
+                        <br>
+                        <p>To confirm the mail change, please follow the link:</p>
+                        <a href="{change_url}">chpoke</a>
+                    </div>
+                """
+        logger.debug("I'm here to send change email")
+        await self._send(recipient, subject, change_email_template)
 
     async def _send(
         self,
