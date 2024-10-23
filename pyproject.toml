@@ -17,6 +17,7 @@ pydantic = { extras = ["email"], version = "^2.9.2" }
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 python-jose = {extras = ["cryptography"], version = "^3.3.0"}
 redis = "^5.1.1"
+python-multipart = "^0.0.12"
 
 
 [tool.poetry.group.dev.dependencies]
