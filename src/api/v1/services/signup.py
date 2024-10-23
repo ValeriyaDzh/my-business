@@ -53,7 +53,10 @@ class SignupService(BaseService):
             logger.debug(f"Prepared user: {data_dict}")
 
             created_user = await self.uow.user_repository.add_one_and_get_obj(
-                **data_dict | {"is_admin": True, "company_id": company_id},
+                **data_dict,
+                is_admin=True,
+                company_id=company_id,
+                is_verified=True,
             )
             logger.debug(created_user)
 
