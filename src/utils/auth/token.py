@@ -57,7 +57,7 @@ class TokenService:
         return encoded_access_jwt
 
     @staticmethod
-    def _encode_jwt(self, data_dict: dict, expires_delta: timedelta) -> str:
+    def _encode_jwt(data_dict: dict, expires_delta: timedelta) -> str:
         to_encode = data_dict.copy()
         to_encode.update({"exp": expires_delta})
         encoded = jwt.encode(
