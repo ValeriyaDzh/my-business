@@ -10,6 +10,6 @@ class DepartmentRepository(SqlAlchemyRepository):
 
     model: Department = Department
 
-    async def add_one_and_get_obj(self, **kwargs):
+    async def add_one_and_get_obj(self, **kwargs) -> Department:
         logger.debug(f"Data for department: {kwargs}")
         return await self.model.create(self.session, **kwargs)

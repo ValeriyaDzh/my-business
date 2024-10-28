@@ -39,7 +39,9 @@ class TokenService:
         return decoded
 
     def create_access_token(
-        self, data: dict[str, Any], expires_delta: timedelta | None = None,
+        self,
+        data: dict[str, Any],
+        expires_delta: timedelta | None = None,
     ) -> str:
         logger.debug(f"Creating token...for data {data}")
 
@@ -54,6 +56,7 @@ class TokenService:
         logger.debug("Created")
         return encoded_access_jwt
 
+    @staticmethod
     def _encode_jwt(self, data_dict: dict, expires_delta: timedelta) -> str:
         to_encode = data_dict.copy()
         to_encode.update({"exp": expires_delta})

@@ -22,7 +22,7 @@ class MailService:
                     <div>
                         <h3> Registration</h3>
                         <br>
-                        <p>Thank you for registering your company on the MyBusiness corporate platform! 
+                        <p>Thank you for registering your company on the MyBusiness corporate platform!
                         To confirm, enter the code on page</p>
                         <a>
                             {invite_token}
@@ -59,7 +59,7 @@ class MailService:
         subject = "Change email"
         change_email_template = f"""
                     <div>
-                        <h3>Email сonfirmation</h3>
+                        <h3>Email confirmation</h3>
                         <br>
                         <p>To confirm the mail change, please follow the link:</p>
                         <a href="{change_url}">chpoke</a>
@@ -89,7 +89,7 @@ class MailService:
                 logger.debug(f"Mail send to {email_to}")
 
         except Exception as e:
-            logger.error(f"Failed to send email: {e}")
+            logger.exception(f"Failed to send email: {e}")
 
 
 mail_service = MailService(

@@ -24,6 +24,6 @@ class SignUpComplete(BaseModel):
     company_name: str
 
     @field_validator("password", mode="after")
-    def hash_password(cls, value):
+    def hash_password(self, value: str) -> str:
         hashed_password = Password.hash(value)
         return hashed_password

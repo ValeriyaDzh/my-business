@@ -1,13 +1,14 @@
 from collections.abc import AsyncGenerator
 from functools import wraps
 from types import TracebackType
-from typing import Any
-
-from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Any, TYPE_CHECKING
 
 from src.database import async_session_maker
 from src.repositories import CompanyRepository, DepartmentRepository, UserRepository
 from src.utils.custom_types import AsyncFunc
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class UnitOfWork:
