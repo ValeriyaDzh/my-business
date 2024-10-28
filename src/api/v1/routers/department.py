@@ -7,7 +7,9 @@ router = APIRouter()
 
 
 @router.post(
-    "/departments", status_code=status.HTTP_201_CREATED, response_model=Department,
+    "/departments",
+    status_code=status.HTTP_201_CREATED,
+    response_model=Department,
 )
 async def create_departments(
     request: Request,
@@ -15,12 +17,16 @@ async def create_departments(
     department_service: DepartmentService = Depends(DepartmentService),
 ):
     return await department_service.create(
-        request.state.company_id, request.state.is_admin, name_department,
+        request.state.company_id,
+        request.state.is_admin,
+        name_department,
     )
 
 
 @router.get(
-    "/departments", status_code=status.HTTP_200_OK, response_model=list[Department],
+    "/departments",
+    status_code=status.HTTP_200_OK,
+    response_model=list[Department],
 )
 async def get_departments(
     request: Request,
@@ -41,5 +47,40 @@ async def create_department(
     department_service: DepartmentService = Depends(DepartmentService),
 ):
     return await department_service.create(
-        request.state.company_id, request.state.is_admin, name_department, department_id,
+        request.state.company_id,
+        request.state.is_admin,
+        name_department,
+        department_id,
+    )
+
+
+@router.get(
+    "/departments/department/{department_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=list[Department],
+)
+async def get_subdepartments(
+    request: Request,
+    department_id: int,
+    department_service: DepartmentService = Depends(DepartmentService),
+):
+    return await department_service.get_subdepartments(
+        request.state.company_id,
+        request.state.is_admin,
+        department_id,
+    )
+
+
+@router.delete(
+    "/departments/department/{department_id}", status_code=status.HTTP_204_NO_CONTENT
+)
+async def delete_department(
+    request: Request,
+    department_id: int,
+    department_service: DepartmentService = Depends(DepartmentService),
+):
+    return await department_service.delete(
+        request.state.company_id,
+        request.state.is_admin,
+        department_id,
     )
