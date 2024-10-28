@@ -30,7 +30,8 @@ class TokenService:
             return True
         return False
 
-    def decode_jwt(self, token: str | bytes) -> dict:
+    @staticmethod
+    def decode_jwt(token: str | bytes) -> dict:
         decoded = jwt.decode(
             token=token,
             key=settings.jwt.SECRET_KEY.get_secret_value(),
