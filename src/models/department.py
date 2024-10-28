@@ -1,9 +1,9 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Integer, Index, func, Sequence, ForeignKey, select
+from sqlalchemy import ForeignKey, Index, Integer, Sequence, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import Mapped, mapped_column, relationship, remote, foreign
-from sqlalchemy_utils import LtreeType, Ltree
+from sqlalchemy.orm import Mapped, foreign, mapped_column, relationship, remote
+from sqlalchemy_utils import Ltree, LtreeType
 
 from src.models.base import Base
 
@@ -33,7 +33,7 @@ class Department(Base):
 
     @classmethod
     async def create(
-        cls, async_session: AsyncSession, name: str, company_id, parent=None
+        cls, async_session: AsyncSession, name: str, company_id, parent=None,
     ):
         result: Result = await async_session.execute(select(id_seq.next_value()))
         _id = result.scalar_one()
@@ -41,7 +41,7 @@ class Department(Base):
         path = ltree_id if parent is None else parent.path + ltree_id
         parent_id = None if parent is None else parent.id
         new_department = cls(
-            id=_id, name=name, company_id=company_id, path=path, parent_id=parent_id
+            id=_id, name=name, company_id=company_id, path=path, parent_id=parent_id,
         )
         async_session.add(new_department)
         return new_department

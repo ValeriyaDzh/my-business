@@ -1,14 +1,7 @@
 import logging
-from typing import TYPE_CHECKING
-
-from sqlalchemy import select, func
-from sqlalchemy_utils import Ltree
 
 from src.models import Department
 from src.utils.repository import SqlAlchemyRepository
-
-if TYPE_CHECKING:
-    from sqlalchemy.engine import Result
 
 logger = logging.getLogger(__name__)
 

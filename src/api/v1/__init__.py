@@ -11,7 +11,7 @@ from src.api.v1.routers.signup import router as signup_router_v1
 
 router_v1 = APIRouter()
 router_v1.include_router(
-    department_router_v1, prefix="/api/v1", tags=["Department | v1"]
+    department_router_v1, prefix="/api/v1", tags=["Department | v1"],
 )
 router_v1.include_router(employee_router_v1, prefix="/api/v1", tags=["Employee | v1"])
 router_v1.include_router(signin_router_v1, prefix="/auth/api/v1", tags=["Sign-in | v1"])

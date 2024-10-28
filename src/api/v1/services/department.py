@@ -17,13 +17,13 @@ class DepartmentService(BaseService):
 
     @transaction_mode
     async def create(
-        self, company_id: str, admin: bool, name: str, parent_id: int | None = None
+        self, company_id: str, admin: bool, name: str, parent_id: int | None = None,
     ) -> Department:
 
         if admin:
             if parent_id:
                 parent: Department = await self.uow.department_repository.get_by_field(
-                    "id", parent_id
+                    "id", parent_id,
                 )
                 logger.debug(parent)
                 if parent and str(parent.company_id) == company_id:
@@ -33,15 +33,14 @@ class DepartmentService(BaseService):
                     raise NotFoundException("Department not found")
 
             return await self.uow.department_repository.add_one_and_get_obj(
-                name=name, company_id=company_id, parent=parent_id
+                name=name, company_id=company_id, parent=parent_id,
             )
 
-        else:
-            raise ForbiddenException("Don't have enough rights to make changes")
+        raise ForbiddenException("Don't have enough rights to make changes")
 
     @transaction_mode
     async def get_all(self, company_id) -> Sequence[Department]:
 
         return await self.uow.department_repository.get_by_field(
-            "company_id", company_id, _all=True
+            "company_id", company_id, _all=True,
         )

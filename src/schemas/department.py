@@ -1,8 +1,6 @@
-from pydantic import BaseModel
-from sqlalchemy_utils import LtreeType
 import uuid
 
-from src.models import Department
+from pydantic import BaseModel
 
 
 class Department(BaseModel):
