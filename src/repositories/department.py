@@ -2,7 +2,8 @@ import logging
 from collections.abc import Sequence
 from typing import Any, TYPE_CHECKING
 
-from sqlalchemy import select, and_, func, update, text
+from sqlalchemy import select, and_, update, text
+from sqlalchemy_utils import LtreeType
 
 from src.models import Department
 from src.utils.repository import SqlAlchemyRepository
@@ -29,7 +30,7 @@ class DepartmentRepository(SqlAlchemyRepository):
         )
         return res.scalars().all()
 
-    async def update_path(self, parent_path: str, delete_path: str) -> None:
+    async def update_path(self, parent_path: str, delete_path: LtreeType) -> None:
         query = (
             update(self.model)
             .where(
@@ -40,7 +41,7 @@ class DepartmentRepository(SqlAlchemyRepository):
             )
             .values(
                 path=text(
-                    f"'{parent_path}' || subpath(path, nlevel('{str(delete_path)}'))"
+                    f"'{parent_path if parent_path else ''}' || subpath(path, nlevel('{str(delete_path)}'))"
                 )
             )
         )
