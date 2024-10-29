@@ -30,7 +30,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 line-length = 120
-exclude = ["alembic/*"]
+exclude = ["migrations/*"]
 target-version = "py311"
 
 [tool.ruff.lint]
@@ -62,6 +62,8 @@ ignore = [
     "RUF009",  # function-call-in-dataclass-default-argument
     "S101",    # assert
     "S608",    # hardcoded-sql-expression
+    "TRY003",  # raise-vanilla-args
+    "TRY401",  # verbose-log-message
 ]
 
 [tool.ruff.lint.flake8-quotes]

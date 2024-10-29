@@ -10,13 +10,14 @@ router = APIRouter()
 async def login_for_access_token(
     login_data: SignIn,
     signin_service: SignInService = Depends(SignInService),
-):
+) -> None:
     token = await signin_service.auth_and_create_token(
-        login_data.email, login_data.password,
+        login_data.email,
+        login_data.password,
     )
     return token
 
 
 @router.get("/me")
-async def get_me():
+async def get_me() -> None:
     return {"hello": "me"}

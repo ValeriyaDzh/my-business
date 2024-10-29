@@ -15,7 +15,8 @@ class TokenService:
 
     cache: Redis = settings.cache.REDIS
 
-    def generate_signup_token(self) -> None:
+    @staticmethod
+    def generate_signup_token() -> None:
         return random.randint(1000, 9999)
 
     def save_signup_token(self, account: str, token: int, ttl: int = 300) -> None:

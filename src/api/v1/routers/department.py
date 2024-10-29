@@ -15,7 +15,7 @@ async def create_departments(
     request: Request,
     name_department: str = Form(...),
     department_service: DepartmentService = Depends(DepartmentService),
-):
+) -> None:
     return await department_service.create(
         request.state.company_id,
         request.state.is_admin,
@@ -31,7 +31,7 @@ async def create_departments(
 async def get_departments(
     request: Request,
     department_service: DepartmentService = Depends(DepartmentService),
-):
+) -> None:
     return await department_service.get_all(request.state.company_id)
 
 
@@ -45,7 +45,7 @@ async def create_department(
     department_id: int,
     name_department: str = Form(...),
     department_service: DepartmentService = Depends(DepartmentService),
-):
+) -> None:
     return await department_service.create(
         request.state.company_id,
         request.state.is_admin,
@@ -63,7 +63,7 @@ async def get_subdepartments(
     request: Request,
     department_id: int,
     department_service: DepartmentService = Depends(DepartmentService),
-):
+) -> None:
     return await department_service.get_subdepartments(
         request.state.company_id,
         request.state.is_admin,
@@ -81,20 +81,24 @@ async def update_department(
     department_id: int,
     department_data: DepartmentUpdate,
     department_service: DepartmentService = Depends(DepartmentService),
-):
+) -> None:
     return await department_service.update(
-        request.state.company_id, request.state.is_admin, department_id, department_data,
+        request.state.company_id,
+        request.state.is_admin,
+        department_id,
+        department_data,
     )
 
 
 @router.delete(
-    "/departments/department/{department_id}", status_code=status.HTTP_204_NO_CONTENT,
+    "/departments/department/{department_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_department(
     request: Request,
     department_id: int,
     department_service: DepartmentService = Depends(DepartmentService),
-):
+) -> None:
     return await department_service.delete(
         request.state.company_id,
         request.state.is_admin,
