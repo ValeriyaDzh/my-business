@@ -47,6 +47,6 @@ class DepartmentRepository(SqlAlchemyRepository):
         )
         await self.session.execute(query)
 
-    async def update_by_parent_id(self, id: int, **kwargs: Any) -> None:
-        query = update(self.model).filter(self.model.parent_id == id).values(**kwargs)
+    async def update_by_parent_id(self, p_id: int, **kwargs: Any) -> None:
+        query = update(self.model).filter(self.model.parent_id == p_id).values(**kwargs)
         await self.session.execute(query)

@@ -33,12 +33,11 @@ class TokenService:
 
     @staticmethod
     def decode_jwt(token: str | bytes) -> dict:
-        decoded = jwt.decode(
+        return jwt.decode(
             token=token,
             key=settings.jwt.SECRET_KEY.get_secret_value(),
             algorithms=settings.jwt.ALGORITHM,
         )
-        return decoded
 
     def create_access_token(
         self,
@@ -62,9 +61,8 @@ class TokenService:
     def _encode_jwt(data_dict: dict, expires_delta: timedelta) -> str:
         to_encode = data_dict.copy()
         to_encode.update({"exp": expires_delta})
-        encoded = jwt.encode(
+        return jwt.encode(
             claims=to_encode,
             key=settings.jwt.SECRET_KEY.get_secret_value(),
             algorithm=settings.jwt.ALGORITHM,
         )
-        return encoded
