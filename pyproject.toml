@@ -14,10 +14,11 @@ sqlalchemy = "^2.0.35"
 alembic = "^1.13.3"
 asyncpg = "^0.29.0"
 pydantic = { extras = ["email"], version = "^2.9.2" }
-passlib = {extras = ["bcrypt"], version = "^1.7.4"}
-python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+passlib = { extras = ["bcrypt"], version = "^1.7.4" }
+python-jose = { extras = ["cryptography"], version = "^3.3.0" }
 redis = "^5.1.1"
 python-multipart = "^0.0.12"
+sqlalchemy-utils = "^0.41.2"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -29,7 +30,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
 line-length = 120
-exclude = ["alembic/*"]
+exclude = ["migrations/*"]
 target-version = "py311"
 
 [tool.ruff.lint]
@@ -56,10 +57,15 @@ ignore = [
     "D401",    # non-imperative-mood
     "DOC501",  # docstring-missing-exception
     "FAST002", # fast-api-non-annotated-dependency
+    "FBT001",  # boolean-type-hint-positional-argument
+    "FBT002",  # boolean-type-hint-positional-argument
+    "G004",    # logging-f-string
     "INP001",  # implicit-namespace-package
     "RUF009",  # function-call-in-dataclass-default-argument
     "S101",    # assert
     "S608",    # hardcoded-sql-expression
+    "TRY003",  # raise-vanilla-args
+    "TRY401",  # verbose-log-message
 ]
 
 [tool.ruff.lint.flake8-quotes]

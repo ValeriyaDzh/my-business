@@ -7,5 +7,4 @@ class UserRepository(SqlAlchemyRepository):
     model = User
 
     async def get_by_email(self, email: str) -> User | None:
-        user = await self.get_by_field("email", email)
-        return user
+        return await self.get_by_field("email", email)

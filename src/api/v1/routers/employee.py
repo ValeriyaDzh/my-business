@@ -16,7 +16,7 @@ async def create_employee(
     data: CreateEmployee,
     request: Request,
     employee_service: EmployeeService = Depends(EmployeeService),
-):
+) -> None:
     await employee_service.create_and_send_invite(
         data,
         request.state.is_admin,
@@ -35,7 +35,7 @@ async def registration_employee(
     token: str,
     password: str = Form(...),
     employee_service: EmployeeService = Depends(EmployeeService),
-):
+) -> None:
     await employee_service.registration(password, token)
     return Message(message="Done...")
 
@@ -50,7 +50,7 @@ async def update_employee(
     update_data: UpdateEmployee,
     request: Request,
     employee_service: EmployeeService = Depends(EmployeeService),
-):
+) -> None:
     await employee_service.update(employee_id, request.state.is_admin, update_data)
     return Message(message="Done...")
 
@@ -65,9 +65,11 @@ async def change_email(
     request: Request,
     new_email: str = Form(...),
     employee_service: EmployeeService = Depends(EmployeeService),
-):
+) -> None:
     await employee_service.send_change_email(
-        employee_id, request.state.is_admin, new_email,
+        employee_id,
+        request.state.is_admin,
+        new_email,
     )
     return Message(message="Email has been sent")
 
@@ -80,6 +82,6 @@ async def change_email(
 async def confirm_new_email(
     token: str,
     employee_service: EmployeeService = Depends(EmployeeService),
-):
+) -> None:
     await employee_service.change_email_confirm(token)
     return Message(message="New mail has been successfully confirmed")

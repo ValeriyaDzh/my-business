@@ -15,7 +15,8 @@ class TokenService:
 
     cache: Redis = settings.cache.REDIS
 
-    def generate_signup_token(self) -> None:
+    @staticmethod
+    def generate_signup_token() -> None:
         return random.randint(1000, 9999)
 
     def save_signup_token(self, account: str, token: int, ttl: int = 300) -> None:
@@ -30,16 +31,18 @@ class TokenService:
             return True
         return False
 
-    def decode_jwt(self, token: str | bytes) -> dict:
-        decoded = jwt.decode(
+    @staticmethod
+    def decode_jwt(token: str | bytes) -> dict:
+        return jwt.decode(
             token=token,
             key=settings.jwt.SECRET_KEY.get_secret_value(),
             algorithms=settings.jwt.ALGORITHM,
         )
-        return decoded
 
     def create_access_token(
-        self, data: dict[str, Any], expires_delta: timedelta | None = None,
+        self,
+        data: dict[str, Any],
+        expires_delta: timedelta | None = None,
     ) -> str:
         logger.debug(f"Creating token...for data {data}")
 
@@ -54,12 +57,12 @@ class TokenService:
         logger.debug("Created")
         return encoded_access_jwt
 
-    def _encode_jwt(self, data_dict: dict, expires_delta: timedelta) -> str:
+    @staticmethod
+    def _encode_jwt(data_dict: dict, expires_delta: timedelta) -> str:
         to_encode = data_dict.copy()
         to_encode.update({"exp": expires_delta})
-        encoded = jwt.encode(
+        return jwt.encode(
             claims=to_encode,
             key=settings.jwt.SECRET_KEY.get_secret_value(),
             algorithm=settings.jwt.ALGORITHM,
         )
-        return encoded

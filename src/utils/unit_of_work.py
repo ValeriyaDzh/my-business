@@ -1,13 +1,14 @@
 from collections.abc import AsyncGenerator
 from functools import wraps
 from types import TracebackType
-from typing import Any
-
-from sqlalchemy.ext.asyncio import AsyncSession
+from typing import TYPE_CHECKING, Any
 
 from src.database import async_session_maker
-from src.repositories import CompanyRepository, UserRepository
+from src.repositories import CompanyRepository, DepartmentRepository, UserRepository
 from src.utils.custom_types import AsyncFunc
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class UnitOfWork:
@@ -17,6 +18,7 @@ class UnitOfWork:
     async def __aenter__(self) -> None:
         self.session: AsyncSession = self.session_factory()
         self.company_repository = CompanyRepository(self.session)
+        self.department_repository = DepartmentRepository(self.session)
         self.user_repository = UserRepository(self.session)
         return self
 

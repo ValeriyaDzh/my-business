@@ -15,7 +15,7 @@ router = APIRouter()
 async def check_account(
     account: EmailStr,
     signup_service: SignupService = Depends(SignupService),
-):
+) -> None:
     await signup_service.check_and_send_invate(account)
     return Message(message="Registration confirmation code has been sent")
 
@@ -24,7 +24,7 @@ async def check_account(
 async def sign_up(
     email_token: VerifyEmail,
     signup_service: SignupService = Depends(SignupService),
-):
+) -> None:
     return signup_service.token_service.verify_signup_token(
         email_token.account,
         email_token.invite_token,
@@ -39,6 +39,6 @@ async def sign_up(
 async def sign_up_complete(
     data: SignUpComplete,
     signup_service: SignupService = Depends(SignupService),
-):
+) -> None:
     await signup_service.create_company_and_admin(data)
     return Message(message="Done...")
