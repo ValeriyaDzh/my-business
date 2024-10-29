@@ -83,12 +83,12 @@ async def update_department(
     department_service: DepartmentService = Depends(DepartmentService),
 ):
     return await department_service.update(
-        request.state.company_id, request.state.is_admin, department_id, department_data
+        request.state.company_id, request.state.is_admin, department_id, department_data,
     )
 
 
 @router.delete(
-    "/departments/department/{department_id}", status_code=status.HTTP_204_NO_CONTENT
+    "/departments/department/{department_id}", status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_department(
     request: Request,

@@ -1,7 +1,7 @@
 from collections.abc import AsyncGenerator
 from functools import wraps
 from types import TracebackType
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from src.database import async_session_maker
 from src.repositories import CompanyRepository, DepartmentRepository, UserRepository
