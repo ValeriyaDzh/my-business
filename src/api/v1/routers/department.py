@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Form, Request, status
 
 from src.api.v1.services import DepartmentService
-from src.schemas.department import Department
+from src.schemas.department import Department, DepartmentUpdate
 
 router = APIRouter()
 
@@ -68,6 +68,22 @@ async def get_subdepartments(
         request.state.company_id,
         request.state.is_admin,
         department_id,
+    )
+
+
+@router.patch(
+    "/departments/department/{department_id}",
+    status_code=status.HTTP_200_OK,
+    response_model=Department,
+)
+async def update_department(
+    request: Request,
+    department_id: int,
+    department_data: DepartmentUpdate,
+    department_service: DepartmentService = Depends(DepartmentService),
+):
+    return await department_service.update(
+        request.state.company_id, request.state.is_admin, department_id, department_data
     )
 
 
