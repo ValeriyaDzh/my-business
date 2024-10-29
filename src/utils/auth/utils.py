@@ -7,7 +7,7 @@ class Password:
     PWD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
     @classmethod
-    def hash(cls, password: str):
+    def hash(cls, password: str) -> str:
         return cls.PWD_CONTEXT.hash(password)
 
     @classmethod

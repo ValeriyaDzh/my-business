@@ -57,6 +57,8 @@ ignore = [
     "D401",    # non-imperative-mood
     "DOC501",  # docstring-missing-exception
     "FAST002", # fast-api-non-annotated-dependency
+    "FBT001",  # boolean-type-hint-positional-argument
+    "FBT002",  # boolean-type-hint-positional-argument
     "G004",    # logging-f-string
     "INP001",  # implicit-namespace-package
     "RUF009",  # function-call-in-dataclass-default-argument

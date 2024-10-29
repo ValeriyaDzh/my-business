@@ -38,7 +38,7 @@ class Department(Base):
         name: str,
         company_id: str,
         parent: Optional["Department"] = None,
-    ):
+    ) -> Optional["Department"]:
         result: Result = await async_session.execute(select(id_seq.next_value()))
         _id = result.scalar_one()
         ltree_id = Ltree(str(_id))
