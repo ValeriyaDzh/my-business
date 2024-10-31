@@ -1,9 +1,10 @@
 import logging
 from collections.abc import Sequence
+from uuid import UUID
 
 from src.models import Department
 from src.schemas.department import DepartmentUpdate
-from src.utils.exceptions import ForbiddenException, NotFoundException
+from src.utils.exceptions import NotFoundException
 from src.utils.service import BaseService
 from src.utils.unit_of_work import transaction_mode
 
@@ -15,14 +16,10 @@ class DepartmentService(BaseService):
     @transaction_mode
     async def create(
         self,
-        company_id: str,
-        admin: bool,
+        company_id: UUID,
         name: str,
         parent_id: int | None = None,
     ) -> Department:
-
-        if not admin:
-            raise ForbiddenException("Don't have enough rights to make changes")
 
         if parent_id:
             parent: Department = await self.uow.department_repository.get_by_field(
@@ -30,7 +27,7 @@ class DepartmentService(BaseService):
                 parent_id,
             )
             logger.debug(parent)
-            if parent and str(parent.company_id) == company_id:
+            if parent and parent.company_id == company_id:
                 parent_id = parent
                 logger.debug(parent_id)
             else:
@@ -53,32 +50,25 @@ class DepartmentService(BaseService):
     @transaction_mode
     async def get_subdepartments(
         self,
-        company_id: str,
-        admin: bool,
+        company_id: UUID,
         department_id: int,
     ) -> Sequence[Department]:
-        if not admin:
-            raise ForbiddenException("Don't have enough rights to make changes")
-
         department: Department = await self.uow.department_repository.get_by_field(
             "id",
             department_id,
         )
-        if not department or str(department.company_id) != company_id:
+        if not department or department.company_id != company_id:
             raise NotFoundException("Department not found")
 
         return await self.uow.department_repository.get_children(department.path)
 
     @transaction_mode
-    async def delete(self, company_id: str, admin: bool, department_id: int) -> None:
-        if not admin:
-            raise ForbiddenException("Don't have enough rights to make changes")
-
+    async def delete(self, company_id: UUID, department_id: int) -> None:
         department: Department = await self.uow.department_repository.get_by_field(
             "id",
             department_id,
         )
-        if not department or str(department.company_id) != company_id:
+        if not department or department.company_id != company_id:
             raise NotFoundException("Department not found")
 
         parent_path = (
@@ -98,19 +88,15 @@ class DepartmentService(BaseService):
     @transaction_mode
     async def update(
         self,
-        company_id: str,
-        admin: bool,
+        company_id: UUID,
         department_id: int,
         data: DepartmentUpdate,
     ) -> Department:
-        if not admin:
-            raise ForbiddenException("Don't have enough rights to make changes")
-
         department: Department = await self.uow.department_repository.get_by_field(
             "id",
             department_id,
         )
-        if not department or str(department.company_id) != company_id:
+        if not department or department.company_id != company_id:
             raise NotFoundException("Department not found")
 
         playload = data.model_dump(exclude_none=True)
@@ -119,7 +105,7 @@ class DepartmentService(BaseService):
                 "id",
                 data.parent_id,
             )
-            if not parent or str(parent.company_id) != company_id:
+            if not parent or parent.company_id != company_id:
                 raise NotFoundException("Department not found")
 
             new_parent_path = parent.path + str(department_id)

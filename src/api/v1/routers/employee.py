@@ -1,8 +1,11 @@
 from fastapi import APIRouter, Depends, Form, Request, status
 
+from src.api.v1.dependencies import is_admin
 from src.api.v1.services import EmployeeService
 from src.schemas.base import Message
 from src.schemas.employee import CreateEmployee, UpdateEmployee
+from src.models import User
+
 
 router = APIRouter()
 
@@ -14,13 +17,12 @@ router = APIRouter()
 )
 async def create_employee(
     data: CreateEmployee,
-    request: Request,
+    user: User = Depends(is_admin),
     employee_service: EmployeeService = Depends(EmployeeService),
 ) -> None:
     await employee_service.create_and_send_invite(
         data,
-        request.state.is_admin,
-        request.state.company_id,
+        user.company_id,
     )
 
     return Message(message="Invite mail has been sent")
@@ -48,10 +50,10 @@ async def registration_employee(
 async def update_employee(
     employee_id: str,
     update_data: UpdateEmployee,
-    request: Request,
+    user: User = Depends(is_admin),
     employee_service: EmployeeService = Depends(EmployeeService),
 ) -> None:
-    await employee_service.update(employee_id, request.state.is_admin, update_data)
+    await employee_service.update(employee_id, update_data)
     return Message(message="Done...")
 
 
@@ -62,13 +64,12 @@ async def update_employee(
 )
 async def change_email(
     employee_id: str,
-    request: Request,
+    user: User = Depends(is_admin),
     new_email: str = Form(...),
     employee_service: EmployeeService = Depends(EmployeeService),
 ) -> None:
     await employee_service.send_change_email(
         employee_id,
-        request.state.is_admin,
         new_email,
     )
     return Message(message="Email has been sent")
