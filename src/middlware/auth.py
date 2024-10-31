@@ -33,7 +33,6 @@ class AuthMiddleware(BaseHTTPMiddleware):
             decoded_token = self.token_service.decode_jwt(token)
 
             user_id = decoded_token.get("sub")
-            is_admin = decoded_token.get("is_admin")
             company_id = decoded_token.get("company_id")
 
             if not user_id or not company_id:
@@ -44,13 +43,14 @@ class AuthMiddleware(BaseHTTPMiddleware):
                 logger.debug(f"{user.id} not found or invalid token data")
                 raise UnauthorizedException
 
-            request.state.user_id = user_id
-            request.state.is_admin = is_admin
-            request.state.company_id = company_id
+            request.state.user = user
+
+            logger.debug(f"user: {request.state.user=}")
 
             return await call_next(request)
 
         except (UnauthorizedException, HTTPException) as exc:
             return JSONResponse(
-                status_code=exc.status_code, content={"detail": exc.detail},
+                status_code=exc.status_code,
+                content={"detail": exc.detail},
             )
