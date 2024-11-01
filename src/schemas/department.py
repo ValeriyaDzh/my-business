@@ -1,21 +1,35 @@
-import uuid
+from uuid import UUID
 
 from pydantic import BaseModel
 
+from src.schemas.base import BaseResponse, BaseCreateResponse
 
-class Department(BaseModel):
+
+class DepartmentSchema(BaseModel):
     id: int | None
     name: str
-    company_id: uuid.UUID
+    company_id: UUID
     parent_id: int | None
 
     class Config:
         from_attributes = True
 
 
-class DepartmentUpdate(BaseModel):
+class DepartmentCreateResponse(BaseCreateResponse):
+    playload: DepartmentSchema
+
+
+class DepartmentUpdateRequest(BaseModel):
     name: str | None = None
     parent_id: int | None = None
 
     class Config:
         from_attributes = True
+
+
+class DepartmentResponse(BaseResponse):
+    payload: DepartmentSchema
+
+
+class DepartmentListResponse(BaseResponse):
+    payload: list[DepartmentSchema]

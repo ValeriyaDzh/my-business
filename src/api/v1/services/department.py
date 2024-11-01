@@ -3,7 +3,7 @@ from collections.abc import Sequence
 from uuid import UUID
 
 from src.models import Department
-from src.schemas.department import DepartmentUpdate
+from src.schemas.department import DepartmentUpdateRequest
 from src.utils.exceptions import NotFoundException
 from src.utils.service import BaseService
 from src.utils.unit_of_work import transaction_mode
@@ -33,19 +33,21 @@ class DepartmentService(BaseService):
             else:
                 raise NotFoundException("Department not found")
 
-        return await self.uow.department_repository.add_one_and_get_obj(
+        new_department = await self.uow.department_repository.add_one_and_get_obj(
             name=name,
             company_id=company_id,
             parent=parent_id,
         )
+        return new_department.to_pydantic_schema()
 
     @transaction_mode
     async def get_all(self, company_id) -> Sequence[Department]:
-        return await self.uow.department_repository.get_by_field(
+        departments = await self.uow.department_repository.get_by_field(
             "company_id",
             company_id,
             _all=True,
         )
+        return [department.to_pydantic_schema() for department in departments]
 
     @transaction_mode
     async def get_subdepartments(
@@ -90,7 +92,7 @@ class DepartmentService(BaseService):
         self,
         company_id: UUID,
         department_id: int,
-        data: DepartmentUpdate,
+        data: DepartmentUpdateRequest,
     ) -> Department:
         department: Department = await self.uow.department_repository.get_by_field(
             "id",
@@ -117,7 +119,8 @@ class DepartmentService(BaseService):
             )
             playload.update({"path": new_parent_path})
 
-        return await self.uow.department_repository.update_one_by_id(
+        updated_department = await self.uow.department_repository.update_one_by_id(
             department_id,
             **playload,
         )
+        return updated_department.to_pydantic_schema()

@@ -6,6 +6,7 @@ from sqlalchemy.orm import Mapped, foreign, mapped_column, relationship, remote
 from sqlalchemy_utils import Ltree, LtreeType
 
 from src.models.base import Base
+from src.schemas.department import DepartmentSchema
 
 if TYPE_CHECKING:
     from sqlalchemy.engine import Result
@@ -53,3 +54,6 @@ class Department(Base):
         )
         async_session.add(new_department)
         return new_department
+
+    def to_pydantic_schema(self) -> DepartmentSchema:
+        return DepartmentSchema(**self.__dict__)
