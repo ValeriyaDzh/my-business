@@ -2,7 +2,7 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from src.schemas.base import BaseResponse, BaseCreateResponse
+from src.schemas.base import BaseCreateResponse, BaseResponse
 
 
 class DepartmentSchema(BaseModel):

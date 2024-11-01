@@ -7,7 +7,6 @@ from src.utils.exceptions import (
     AlreadyExistsException,
     BadRequestException,
     DatabaseException,
-    ForbiddenException,
     NotFoundException,
 )
 from src.utils.mail_util import MailService, mail_service

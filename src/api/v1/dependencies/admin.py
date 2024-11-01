@@ -1,6 +1,7 @@
 import logging
 
 from fastapi import Request
+
 from src.models import User
 from src.utils.exceptions import ForbiddenException
 

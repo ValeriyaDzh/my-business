@@ -1,11 +1,10 @@
-from fastapi import APIRouter, Depends, Form, Request, status
+from fastapi import APIRouter, Depends, Form, status
 
 from src.api.v1.dependencies import is_admin
 from src.api.v1.services import EmployeeService
+from src.models import User
 from src.schemas.base import Message
 from src.schemas.employee import CreateEmployee, UpdateEmployee
-from src.models import User
-
 
 router = APIRouter()
 

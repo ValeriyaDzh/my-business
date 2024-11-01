@@ -1,4 +1,3 @@
-import logging
 from fastapi import APIRouter, Depends, Form, Request, status
 
 from src.api.v1.dependencies import is_admin
@@ -6,14 +5,12 @@ from src.api.v1.services import DepartmentService
 from src.models import User
 from src.schemas.department import (
     DepartmentCreateResponse,
-    DepartmentResponse,
     DepartmentListResponse,
+    DepartmentResponse,
     DepartmentUpdateRequest,
 )
 
 router = APIRouter()
-
-logger = logging.getLogger(__name__)
 
 
 @router.post(
