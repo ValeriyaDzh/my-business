@@ -4,7 +4,12 @@ from types import TracebackType
 from typing import TYPE_CHECKING, Any
 
 from src.database import async_session_maker
-from src.repositories import CompanyRepository, DepartmentRepository, UserRepository
+from src.repositories import (
+    CompanyRepository,
+    DepartmentRepository,
+    PositionRepository,
+    UserRepository,
+)
 from src.utils.custom_types import AsyncFunc
 
 if TYPE_CHECKING:
@@ -19,6 +24,7 @@ class UnitOfWork:
         self.session: AsyncSession = self.session_factory()
         self.company_repository = CompanyRepository(self.session)
         self.department_repository = DepartmentRepository(self.session)
+        self.position_repository = PositionRepository(self.session)
         self.user_repository = UserRepository(self.session)
         return self
 
