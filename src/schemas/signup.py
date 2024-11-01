@@ -1,19 +1,21 @@
 from pydantic import BaseModel, EmailStr, field_validator
 
+from src.schemas.base import BaseResponse
+from src.schemas.signin import Token
 from src.utils.auth import Password
-
-
-class Message(BaseModel):
-    message: str
 
 
 class SignUp(BaseModel):
     account: EmailStr
 
 
-class VerifyEmail(BaseModel):
+class VerifyEmailRequest(BaseModel):
     account: EmailStr
     invite_token: int
+
+
+class VerifyEmailResponse(BaseResponse):
+    playload: Token
 
 
 class SignUpComplete(BaseModel):

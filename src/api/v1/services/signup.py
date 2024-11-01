@@ -1,8 +1,14 @@
 import logging
 
+from src.schemas.base import Message
+from src.schemas.signin import Token
 from src.schemas.signup import SignUpComplete
 from src.utils.auth import TokenService
-from src.utils.exceptions import AlreadyExistsException, DatabaseException
+from src.utils.exceptions import (
+    AlreadyExistsException,
+    DatabaseException,
+    UnauthorizedException,
+)
 from src.utils.mail_util import MailService, mail_service
 from src.utils.service import BaseService
 from src.utils.unit_of_work import transaction_mode
@@ -17,7 +23,7 @@ class SignupService(BaseService):
         self.mail_service: MailService = mail_service
 
     @transaction_mode
-    async def check_and_send_invate(self, email: str):
+    async def check_and_send_invate(self, email: str) -> Message:
 
         if await self.uow.user_repository.get_by_email(email):
             raise AlreadyExistsException(detail="This email is already in use")
@@ -29,8 +35,19 @@ class SignupService(BaseService):
                 invite_token=token,
             )
             self.token_service.save_signup_token(account=email, token=token)
+            return Message(message="Registration confirmation code has been sent")
         except Exception as e:
             logger.exception(f"Failed to send signup token: {e}")
+
+    def verify_and_create_token(self, email: str, token: int) -> Token:
+        if self.token_service.verify_signup_token(email, token):
+            access_token = self.token_service.create_access_token(
+                {
+                    "email": email,
+                },
+            )
+            return Token(access_token=access_token, token_type="Bearer")
+        raise UnauthorizedException
 
     @transaction_mode
     async def create_company_and_admin(self, playload: SignUpComplete) -> None:

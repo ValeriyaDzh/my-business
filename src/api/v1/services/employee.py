@@ -1,6 +1,7 @@
 import logging
 from uuid import UUID
 
+from src.schemas.base import Message
 from src.schemas.employee import CreateEmployee, UpdateEmployee
 from src.utils.auth import Password, TokenService
 from src.utils.exceptions import (
@@ -27,7 +28,7 @@ class EmployeeService(BaseService):
         self,
         playload: CreateEmployee,
         company: UUID,
-    ) -> None:
+    ) -> Message:
 
         await self.create(playload, company)
 
@@ -44,6 +45,7 @@ class EmployeeService(BaseService):
             playload.password,
             inv_url,
         )
+        return Message(message="Invite mail has been sent")
 
     @transaction_mode
     async def create(self, playload: CreateEmployee, company: str) -> None:
@@ -62,7 +64,7 @@ class EmployeeService(BaseService):
             raise DatabaseException
 
     @transaction_mode
-    async def registration(self, password: str, token: str) -> None:
+    async def registration(self, password: str, token: str) -> Message:
 
         decoded_token = self.token_service.decode_jwt(token)
         email = decoded_token.get("email")
@@ -80,6 +82,7 @@ class EmployeeService(BaseService):
                     employee.id,
                     is_verified=True,
                 )
+                return Message(message="Done...")
 
             except Exception as e:
                 logger.error(f"Database error: {e}")
@@ -89,12 +92,13 @@ class EmployeeService(BaseService):
             raise BadRequestException("Incorrect password")
 
     @transaction_mode
-    async def update(self, employee_id: str, data: UpdateEmployee) -> None:
+    async def update(self, employee_id: str, data: UpdateEmployee) -> Message:
 
         playload = data.model_dump(exclude_none=True)
 
         try:
             await self.uow.user_repository.update_one_by_id(employee_id, **playload)
+            return Message(message="Done...")
 
         except Exception as e:
             logger.error(f"Database error while update {employee_id}: {e}")
@@ -105,7 +109,7 @@ class EmployeeService(BaseService):
         self,
         employee_id: str,
         email: str,
-    ) -> None:
+    ) -> Message:
 
         if await self.uow.user_repository.get_by_email(email):
             raise AlreadyExistsException("This email is already in use")
@@ -127,12 +131,12 @@ class EmployeeService(BaseService):
                 email,
                 change_email_url,
             )
+            return Message(message="Email has been sent")
 
-        else:
-            raise NotFoundException("Employee not found")
+        raise NotFoundException("Employee not found")
 
     @transaction_mode
-    async def change_email_confirm(self, token: str) -> None:
+    async def change_email_confirm(self, token: str) -> Message:
 
         decoded_token = self.token_service.decode_jwt(token)
         new_email = decoded_token.get("email")
@@ -146,6 +150,6 @@ class EmployeeService(BaseService):
                 employee_id,
                 email=new_email,
             )
+            return Message(message="New mail has been successfully confirmed")
 
-        else:
-            raise BadRequestException("The email has already been changed")
+        raise BadRequestException("The email has already been changed")

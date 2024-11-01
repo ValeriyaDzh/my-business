@@ -1,5 +1,7 @@
 from pydantic import BaseModel, EmailStr
 
+from src.schemas.base import BaseMessageCreateResponse, BaseMessageResponse
+
 
 class Employee(BaseModel):
     email: EmailStr
@@ -14,3 +16,11 @@ class CreateEmployee(Employee):
 class UpdateEmployee(BaseModel):
     first_name: str | None = None
     last_name: str | None = None
+
+
+class EmploeeMessageResponse(BaseMessageResponse):
+    pass
+
+
+class EmploeeMessageCreateResponse(BaseMessageCreateResponse):
+    pass
