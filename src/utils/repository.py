@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any, TypeVar
 from uuid import UUID
 
 from sqlalchemy import and_, delete, insert, select, update
+from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.models import Base
@@ -64,3 +65,14 @@ class SqlAlchemyRepository:
     async def delete_by_query(self, **kwargs: Any) -> None:
         query = delete(self.model).filter_by(**kwargs)
         await self.session.execute(query)
+
+    async def get_by_id_with_selectinload(
+        self, obj_id: int, field_to_load: Any
+    ) -> Sequence[T]:
+        query = (
+            select(self.model)
+            .where(self.model.id == obj_id)
+            .options(selectinload(getattr(self.model, field_to_load)))
+        )
+        res: Result = await self.session.execute(query)
+        return res.scalar_one_or_none()

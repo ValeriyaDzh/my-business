@@ -99,4 +99,6 @@ class DepartmentService(BaseService):
 
     @transaction_mode
     async def get_by_id(self, department_id: int) -> Department:
-        return await self.uow.department_repository.get_by_field("id", department_id)
+        return await self.uow.department_repository.get_by_id_with_selectinload(
+            department_id, "positions"
+        )
