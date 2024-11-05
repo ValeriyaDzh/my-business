@@ -20,3 +20,15 @@ async def valid_position_admin(
     if not position or position.company_id != admin.company_id:
         raise NotFoundException("Position not found")
     return position_service
+
+
+async def valid_position(
+    position_id: int,
+    admin: User = Depends(is_admin),
+    position_service: PositionService = Depends(PositionService),
+) -> PositionService:
+    position: Position = await position_service.get_by_id(position_id)
+    logger.debug(f"Position admin check: {position.company_id=} - {admin.company_id=}")
+    if not position or position.company_id != admin.company_id:
+        raise NotFoundException("Position not found")
+    return position
