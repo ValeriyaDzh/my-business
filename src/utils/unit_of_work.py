@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 from src.database import async_session_maker
 from src.repositories import (
     CompanyRepository,
+    DepartmentPositionRepository,
     DepartmentRepository,
     PositionRepository,
     UserRepository,
@@ -23,6 +24,7 @@ class UnitOfWork:
     async def __aenter__(self) -> None:
         self.session: AsyncSession = self.session_factory()
         self.company_repository = CompanyRepository(self.session)
+        self.department_position_repository = DepartmentPositionRepository(self.session)
         self.department_repository = DepartmentRepository(self.session)
         self.position_repository = PositionRepository(self.session)
         self.user_repository = UserRepository(self.session)
