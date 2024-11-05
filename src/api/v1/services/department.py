@@ -18,25 +18,13 @@ class DepartmentService(BaseService):
         self,
         company_id: UUID,
         name: str,
-        parent_id: int | None = None,
+        parent_department: Department | None = None,
     ) -> Department:
-
-        if parent_id:
-            parent: Department = await self.uow.department_repository.get_by_field(
-                "id",
-                parent_id,
-            )
-            logger.debug(parent)
-            if parent and parent.company_id == company_id:
-                parent_id = parent
-                logger.debug(parent_id)
-            else:
-                raise NotFoundException("Department not found")
 
         new_department = await self.uow.department_repository.add_one_and_get_obj(
             name=name,
             company_id=company_id,
-            parent=parent_id,
+            parent=parent_department,
         )
         return new_department.to_pydantic_schema()
 
@@ -52,26 +40,13 @@ class DepartmentService(BaseService):
     @transaction_mode
     async def get_subdepartments(
         self,
-        company_id: UUID,
-        department_id: int,
+        department: Department,
     ) -> Sequence[Department]:
-        department: Department = await self.uow.department_repository.get_by_field(
-            "id",
-            department_id,
-        )
-        if not department or department.company_id != company_id:
-            raise NotFoundException("Department not found")
 
         return await self.uow.department_repository.get_children(department.path)
 
     @transaction_mode
-    async def delete(self, company_id: UUID, department_id: int) -> None:
-        department: Department = await self.uow.department_repository.get_by_field(
-            "id",
-            department_id,
-        )
-        if not department or department.company_id != company_id:
-            raise NotFoundException("Department not found")
+    async def delete(self, department: Department) -> None:
 
         parent_path = (
             str(department.path).rsplit(".", 1)[0] if department.parent_id else None
@@ -85,21 +60,16 @@ class DepartmentService(BaseService):
             parent_id=department.parent_id,
         )
 
-        await self.uow.department_repository.delete_by_query(id=department_id)
+        await self.uow.department_repository.delete_by_query(id=department.id)
 
     @transaction_mode
     async def update(
         self,
-        company_id: UUID,
-        department_id: int,
+        # company_id: UUID,
+        # department_id: int,
+        department: Department,
         data: DepartmentUpdateRequest,
     ) -> Department:
-        department: Department = await self.uow.department_repository.get_by_field(
-            "id",
-            department_id,
-        )
-        if not department or department.company_id != company_id:
-            raise NotFoundException("Department not found")
 
         playload = data.model_dump(exclude_none=True)
         if data.parent_id:
@@ -107,10 +77,10 @@ class DepartmentService(BaseService):
                 "id",
                 data.parent_id,
             )
-            if not parent or parent.company_id != company_id:
+            if not parent or parent.company_id != department.company_id:
                 raise NotFoundException("Department not found")
 
-            new_parent_path = parent.path + str(department_id)
+            new_parent_path = parent.path + str(department.id)
             logger.debug(f"Here: {new_parent_path=}")
 
             await self.uow.department_repository.update_path(
@@ -119,8 +89,14 @@ class DepartmentService(BaseService):
             )
             playload.update({"path": new_parent_path})
 
-        updated_department = await self.uow.department_repository.update_one_by_id(
-            department_id,
-            **playload,
+        updated_department: Department = (
+            await self.uow.department_repository.update_one_by_id(
+                department.id,
+                **playload,
+            )
         )
         return updated_department.to_pydantic_schema()
+
+    @transaction_mode
+    async def get_by_id(self, department_id: int) -> Department:
+        return await self.uow.department_repository.get_by_field("id", department_id)

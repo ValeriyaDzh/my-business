@@ -28,8 +28,8 @@ class DepartmentUpdateRequest(BaseModel):
 
 
 class DepartmentResponse(BaseResponse):
-    payload: DepartmentSchema
+    playload: DepartmentSchema
 
 
 class DepartmentListResponse(BaseResponse):
-    payload: list[DepartmentSchema]
+    playload: list[DepartmentSchema]
