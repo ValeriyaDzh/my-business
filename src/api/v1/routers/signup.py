@@ -1,9 +1,15 @@
 from fastapi import APIRouter, Depends, status
 from pydantic import EmailStr
 
+from src.api.v1.dependencies import valid_user
 from src.api.v1.services import SignupService
-from src.schemas.base import BaseMessageResponse
-from src.schemas.signup import SignUpComplete, VerifyEmailRequest, VerifyEmailResponse
+from src.schemas.base import BaseMessageResponse, BaseCreateResponse
+from src.schemas.signup import (
+    SignUpComplete,
+    SignUpCompleteRequest,
+    VerifyEmailRequest,
+    VerifyEmailResponse,
+)
 
 router = APIRouter()
 
@@ -22,14 +28,17 @@ async def check_account(
 
 
 @router.post(
-    "/sign-up/", status_code=status.HTTP_200_OK, response_model=VerifyEmailResponse,
+    "/sign-up/",
+    status_code=status.HTTP_200_OK,
+    response_model=VerifyEmailResponse,
 )
 async def sign_up(
     email_token: VerifyEmailRequest,
     signup_service: SignupService = Depends(SignupService),
 ) -> None:
     token = signup_service.verify_and_create_token(
-        email_token.account, email_token.invite_token,
+        email_token.account,
+        email_token.invite_token,
     )
     return VerifyEmailResponse(playload=token)
 
@@ -37,11 +46,12 @@ async def sign_up(
 @router.post(
     "/sign-up-complete/",
     status_code=status.HTTP_201_CREATED,
-    response_model=BaseMessageResponse,
+    response_model=BaseCreateResponse,
 )
 async def sign_up_complete(
-    data: SignUpComplete,
-    # token: str = Depends(oauth2_scheme), доделать обработку токена
+    data: SignUpCompleteRequest,
+    email: str = Depends(valid_user),
     signup_service: SignupService = Depends(SignupService),
 ) -> None:
-    await signup_service.create_company_and_admin(data)
+    await signup_service.create_company_and_admin(email, data)
+    return BaseCreateResponse

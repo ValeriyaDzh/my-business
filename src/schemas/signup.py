@@ -29,3 +29,15 @@ class SignUpComplete(BaseModel):
     def hash_password(cls, value: str) -> str:
         hashed_password = Password.hash(value)
         return hashed_password
+
+
+class SignUpCompleteRequest(BaseModel):
+    password: str
+    first_name: str
+    last_name: str
+    company_name: str
+
+    @field_validator("password", mode="after")
+    def hash_password(cls, value: str) -> str:
+        hashed_password = Password.hash(value)
+        return hashed_password
