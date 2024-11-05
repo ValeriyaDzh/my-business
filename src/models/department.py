@@ -5,11 +5,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped, foreign, mapped_column, relationship, remote
 from sqlalchemy_utils import Ltree, LtreeType
 
-from src.models.base import Base
+from src.models import Base
 from src.schemas.department import DepartmentSchema
 
 if TYPE_CHECKING:
     from sqlalchemy.engine import Result
+    from src.models import Position
 
 id_seq = Sequence("department_id_seq")
 
@@ -22,6 +23,10 @@ class Department(Base):
     path: Mapped[str] = mapped_column(LtreeType)
     company_id: Mapped[str] = mapped_column(ForeignKey("company.id"))
     parent_id: Mapped[int] = mapped_column(ForeignKey("department.id"), nullable=True)
+
+    positions: Mapped[list["Position"]] = relationship(
+        back_populates="departments", secondary="department_position_link"
+    )
 
     parent = relationship(
         "Department",

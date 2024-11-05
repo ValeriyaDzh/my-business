@@ -1,6 +1,7 @@
 __all__ = [
     "Base",
     "Company",
+    "DepartmentPositionLink",
     "Department",
     "Position",
     "User",
@@ -8,6 +9,7 @@ __all__ = [
 
 from src.models.base import Base
 from src.models.company import Company
+from src.models.departament_position import DepartmentPositionLink
 from src.models.department import Department
 from src.models.position import Position
 from src.models.user import User
