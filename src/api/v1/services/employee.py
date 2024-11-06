@@ -95,6 +95,13 @@ class EmployeeService(BaseService):
     async def update(self, employee_id: str, data: UpdateEmployee) -> Message:
 
         playload = data.model_dump(exclude_none=True)
+        if "department_id" in playload:
+            dep_pos = await self.uow.department_position_repository.get_by_filters(
+                department_id=playload["department_id"],
+                position_id=playload["position_id"],
+            )
+            if not dep_pos:
+                raise NotFoundException("Positions not found in department")
 
         try:
             await self.uow.user_repository.update_one_by_id(employee_id, **playload)
@@ -114,26 +121,20 @@ class EmployeeService(BaseService):
         if await self.uow.user_repository.get_by_email(email):
             raise AlreadyExistsException("This email is already in use")
 
-        employee = await self.uow.user_repository.get_by_field("id", employee_id)
-        if employee:
-
-            token = self.token_service.create_access_token(
-                {
-                    "email": email,
-                    "employee_id": employee_id,
-                },
-            )
-            change_email_url = (
-                f"http://127.0.0.1:8000/api/v1/employees/change-email/{token}"
-            )
-
-            await self.mail.send_change_email(
-                email,
-                change_email_url,
-            )
-            return Message(message="Email has been sent")
-
-        raise NotFoundException("Employee not found")
+        token = self.token_service.create_access_token(
+            {
+                "email": email,
+                "employee_id": employee_id,
+            },
+        )
+        change_email_url = (
+            f"http://127.0.0.1:8000/api/v1/employees/change-email/{token}"
+        )
+        await self.mail.send_change_email(
+            email,
+            change_email_url,
+        )
+        return Message(message="Email has been sent")
 
     @transaction_mode
     async def change_email_confirm(self, token: str) -> Message:

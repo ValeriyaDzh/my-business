@@ -3,17 +3,19 @@ __all__ = [
     "CompanyService",
     "DepartmentPositionService",
     "DepartmentService",
-    "PositionService",
+    "EmployeePositionService",
     "EmployeeService",
+    "PositionService",
     "SignInService",
     "SignupService",
     "UserService",
 ]
 
 from src.api.v1.services.company import CompanyService
-from src.api.v1.services.department_position import DepartmentPositionService
 from src.api.v1.services.department import DepartmentService
+from src.api.v1.services.department_position import DepartmentPositionService
 from src.api.v1.services.employee import EmployeeService
+from src.api.v1.services.employee_position import EmployeePositionService
 from src.api.v1.services.position import PositionService
 from src.api.v1.services.signin import SignInService
 from src.api.v1.services.signup import SignupService
