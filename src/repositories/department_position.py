@@ -1,5 +1,3 @@
-
-
 from src.models import DepartmentPositionLink
 from src.utils.repository import SqlAlchemyRepository
 
