@@ -8,6 +8,7 @@ __all__ = [
     "PositionService",
     "SignInService",
     "SignupService",
+    "TaskService",
     "UserService",
 ]
 
@@ -19,4 +20,5 @@ from src.api.v1.services.employee_position import EmployeePositionService
 from src.api.v1.services.position import PositionService
 from src.api.v1.services.signin import SignInService
 from src.api.v1.services.signup import SignupService
+from src.api.v1.services.task import TaskService
 from src.api.v1.services.user import UserService
