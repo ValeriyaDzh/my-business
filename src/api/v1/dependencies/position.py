@@ -4,7 +4,7 @@ from fastapi import Depends
 
 from src.api.v1.dependencies.admin import is_admin
 from src.api.v1.services import PositionService
-from src.models import User, Position
+from src.models import Position, User
 from src.utils.exceptions import NotFoundException
 
 logger = logging.getLogger(__name__)

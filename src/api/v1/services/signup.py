@@ -2,7 +2,7 @@ import logging
 
 from src.schemas.base import Message
 from src.schemas.signin import Token
-from src.schemas.signup import SignUpComplete, SignUpCompleteRequest
+from src.schemas.signup import SignUpCompleteRequest
 from src.utils.auth import TokenService
 from src.utils.exceptions import (
     AlreadyExistsException,
@@ -51,7 +51,7 @@ class SignupService(BaseService):
 
     @transaction_mode
     async def create_company_and_admin(
-        self, email: str, data: SignUpCompleteRequest
+        self, email: str, data: SignUpCompleteRequest,
     ) -> None:
         try:
             if await self.uow.company_repository.get_by_field(

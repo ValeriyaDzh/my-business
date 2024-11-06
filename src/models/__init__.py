@@ -1,8 +1,8 @@
 __all__ = [
     "Base",
     "Company",
-    "DepartmentPositionLink",
     "Department",
+    "DepartmentPositionLink",
     "Position",
     "User",
 ]

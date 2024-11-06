@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, ForeignKey
+from sqlalchemy import ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.models import Base, Department
@@ -14,7 +14,7 @@ class Position(Base):
         ForeignKey("company.id", ondelete="CASCADE"),
     )
     departments: Mapped[list["Department"]] = relationship(
-        back_populates="positions", secondary="department_position_link"
+        back_populates="positions", secondary="department_position_link",
     )
 
     def to_pydantic_schema(self) -> PositionSchema:

@@ -9,8 +9,8 @@ class DepartmentPositionLink(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     department_id: Mapped[int] = mapped_column(
-        ForeignKey("department.id", ondelete="CASCADE")
+        ForeignKey("department.id", ondelete="CASCADE"),
     )
     position_id: Mapped[int] = mapped_column(
-        ForeignKey("position.id", ondelete="CASCADE")
+        ForeignKey("position.id", ondelete="CASCADE"),
     )

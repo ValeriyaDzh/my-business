@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING, Optional
+from uuid import UUID
 
 from sqlalchemy import ForeignKey, Index, Integer, Sequence, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,6 +11,7 @@ from src.schemas.department import DepartmentSchema
 
 if TYPE_CHECKING:
     from sqlalchemy.engine import Result
+
     from src.models import Position
 
 id_seq = Sequence("department_id_seq")
@@ -23,9 +25,10 @@ class Department(Base):
     path: Mapped[str] = mapped_column(LtreeType)
     company_id: Mapped[str] = mapped_column(ForeignKey("company.id"))
     parent_id: Mapped[int] = mapped_column(ForeignKey("department.id"), nullable=True)
+    head_id: Mapped[UUID | None] = mapped_column(ForeignKey("user.id"))
 
     positions: Mapped[list["Position"]] = relationship(
-        back_populates="departments", secondary="department_position_link"
+        back_populates="departments", secondary="department_position_link",
     )
 
     parent = relationship(

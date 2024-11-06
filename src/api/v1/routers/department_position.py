@@ -17,7 +17,7 @@ router = APIRouter()
 async def get_positions_from_department(
     department: Department = Depends(valid_department),
     department_position_service: DepartmentPositionService = Depends(
-        DepartmentPositionService
+        DepartmentPositionService,
     ),
 ) -> None:
     positions = await department_position_service.get_positions(department)
@@ -33,7 +33,7 @@ async def add_position_to_department(
     position: Position = Depends(valid_position),
     department: Department = Depends(valid_department),
     department_position_service: DepartmentPositionService = Depends(
-        DepartmentPositionService
+        DepartmentPositionService,
     ),
 ) -> None:
     message = await department_position_service.add_position(department, position)
@@ -48,7 +48,7 @@ async def remove_position_from_department(
     position: Position = Depends(valid_position),
     department: Department = Depends(valid_department),
     department_position_service: DepartmentPositionService = Depends(
-        DepartmentPositionService
+        DepartmentPositionService,
     ),
 ) -> None:
     await department_position_service.remove_position(department.id, position.id)

@@ -3,9 +3,8 @@ from pydantic import EmailStr
 
 from src.api.v1.dependencies import valid_user
 from src.api.v1.services import SignupService
-from src.schemas.base import BaseMessageResponse, BaseCreateResponse
+from src.schemas.base import BaseCreateResponse, BaseMessageResponse
 from src.schemas.signup import (
-    SignUpComplete,
     SignUpCompleteRequest,
     VerifyEmailRequest,
     VerifyEmailResponse,

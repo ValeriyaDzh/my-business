@@ -27,7 +27,7 @@ async def create_position(
 
 
 @router.get(
-    "/positions", status_code=status.HTTP_200_OK, response_model=PositionListResponse
+    "/positions", status_code=status.HTTP_200_OK, response_model=PositionListResponse,
 )
 async def get_positions(
     user: User = Depends(is_admin),
@@ -52,7 +52,7 @@ async def edit_position(
 
 
 @router.delete(
-    "/positions/position/{position_id}", status_code=status.HTTP_204_NO_CONTENT
+    "/positions/position/{position_id}", status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_position(
     position_id: int,
