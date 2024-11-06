@@ -19,7 +19,6 @@ class SignInService(BaseService):
             {
                 "sub": str(user.id),
                 "email": user.email,
-                "is_admin": user.is_admin,
                 "company_id": str(user.company_id),
             },
         )
@@ -36,5 +35,6 @@ class SignInService(BaseService):
     @transaction_mode
     async def verified_user(self, current_user: User) -> None:
         await self.uow.user_repository.update_one_by_id(
-            current_user.id, {"is_verified": True},
+            current_user.id,
+            {"is_verified": True},
         )

@@ -1,8 +1,14 @@
-from fastapi import APIRouter, Depends, Form, Request, status
+from fastapi import APIRouter, Depends, Form, status
 
+from src.api.v1.dependencies import is_admin, valid_employee
 from src.api.v1.services import EmployeeService
-from src.schemas.base import Message
-from src.schemas.employee import CreateEmployee, UpdateEmployee
+from src.models import User
+from src.schemas.employee import (
+    CreateEmployee,
+    EmployeeMessageCreateResponse,
+    EmployeeMessageResponse,
+    UpdateEmployee,
+)
 
 router = APIRouter()
 
@@ -10,78 +16,74 @@ router = APIRouter()
 @router.post(
     "/employees/create",
     status_code=status.HTTP_201_CREATED,
-    response_model=Message,
+    response_model=EmployeeMessageCreateResponse,
 )
 async def create_employee(
     data: CreateEmployee,
-    request: Request,
+    user: User = Depends(is_admin),
     employee_service: EmployeeService = Depends(EmployeeService),
 ) -> None:
-    await employee_service.create_and_send_invite(
+    message = await employee_service.create_and_send_invite(
         data,
-        request.state.is_admin,
-        request.state.company_id,
+        user.company_id,
     )
 
-    return Message(message="Invite mail has been sent")
+    return EmployeeMessageCreateResponse(playload=message)
 
 
 @router.post(
     "/employees/registration/{token}",
     status_code=status.HTTP_200_OK,
-    response_model=Message,
+    response_model=EmployeeMessageResponse,
 )
 async def registration_employee(
     token: str,
     password: str = Form(...),
     employee_service: EmployeeService = Depends(EmployeeService),
 ) -> None:
-    await employee_service.registration(password, token)
-    return Message(message="Done...")
+    message = await employee_service.registration(password, token)
+    return EmployeeMessageResponse(playload=message)
 
 
 @router.patch(
     "/employees/{employee_id}/update",
     status_code=status.HTTP_200_OK,
-    response_model=Message,
+    response_model=EmployeeMessageResponse,
 )
 async def update_employee(
-    employee_id: str,
     update_data: UpdateEmployee,
-    request: Request,
+    employee: User = Depends(valid_employee),
     employee_service: EmployeeService = Depends(EmployeeService),
 ) -> None:
-    await employee_service.update(employee_id, request.state.is_admin, update_data)
-    return Message(message="Done...")
+    message = await employee_service.update(employee.id, update_data)
+    return EmployeeMessageResponse(playload=message)
 
 
 @router.post(
     "/employees/{employee_id}/change-email",
     status_code=status.HTTP_200_OK,
-    response_model=Message,
+    response_model=EmployeeMessageResponse,
 )
 async def change_email(
-    employee_id: str,
-    request: Request,
+    employee: User = Depends(valid_employee),
     new_email: str = Form(...),
     employee_service: EmployeeService = Depends(EmployeeService),
 ) -> None:
-    await employee_service.send_change_email(
-        employee_id,
-        request.state.is_admin,
+    message = await employee_service.send_change_email(
+        employee.id,
         new_email,
     )
-    return Message(message="Email has been sent")
+    return EmployeeMessageResponse(playload=message)
 
 
 @router.get(
     "/employees/confirm-new-email/{token}",
     status_code=status.HTTP_200_OK,
-    response_model=Message,
+    response_model=EmployeeMessageResponse,
 )
 async def confirm_new_email(
     token: str,
     employee_service: EmployeeService = Depends(EmployeeService),
 ) -> None:
-    await employee_service.change_email_confirm(token)
-    return Message(message="New mail has been successfully confirmed")
+    message = await employee_service.change_email_confirm(token)
+    return EmployeeMessageResponse(playload=message)

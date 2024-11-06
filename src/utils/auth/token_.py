@@ -29,7 +29,6 @@ class TokenService:
             self.cache.delete(account)
             logger.debug(f"Email {account} has been verified")
             return True
-        return False
 
     @staticmethod
     def decode_jwt(token: str | bytes) -> dict:

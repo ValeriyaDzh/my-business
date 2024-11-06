@@ -1,7 +1,16 @@
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, Form, Request, status
 
+from src.api.v1.dependencies import is_admin, valid_department
 from src.api.v1.services import DepartmentService
-from src.schemas.department import Department, DepartmentUpdate
+from src.models import Department, User
+from src.schemas.department import (
+    DepartmentCreateResponse,
+    DepartmentListResponse,
+    DepartmentResponse,
+    DepartmentUpdateRequest,
+)
 
 router = APIRouter()
 
@@ -9,85 +18,87 @@ router = APIRouter()
 @router.post(
     "/departments",
     status_code=status.HTTP_201_CREATED,
-    response_model=Department,
+    response_model=DepartmentCreateResponse,
 )
 async def create_departments(
-    request: Request,
+    user: User = Depends(is_admin),
     name_department: str = Form(...),
     department_service: DepartmentService = Depends(DepartmentService),
 ) -> None:
-    return await department_service.create(
-        request.state.company_id,
-        request.state.is_admin,
+    department = await department_service.create(
+        user.company_id,
         name_department,
     )
+    return DepartmentCreateResponse(playload=department)
 
 
 @router.get(
     "/departments",
     status_code=status.HTTP_200_OK,
-    response_model=list[Department],
+    response_model=DepartmentListResponse,
 )
 async def get_departments(
     request: Request,
     department_service: DepartmentService = Depends(DepartmentService),
 ) -> None:
-    return await department_service.get_all(request.state.company_id)
+    departments = await department_service.get_all(request.state.user.company_id)
+    return DepartmentListResponse(playload=departments)
 
 
 @router.post(
     "/departments/department/{department_id}",
     status_code=status.HTTP_201_CREATED,
-    response_model=Department,
+    response_model=DepartmentCreateResponse,
 )
 async def create_department(
-    request: Request,
-    department_id: int,
+    # department_id: int,
     name_department: str = Form(...),
+    # user: User = Depends(is_admin),
+    parent_department: Department = Depends(valid_department),
     department_service: DepartmentService = Depends(DepartmentService),
 ) -> None:
-    return await department_service.create(
-        request.state.company_id,
-        request.state.is_admin,
+    department = await department_service.create(
+        parent_department.company_id,
         name_department,
-        department_id,
+        parent_department,
     )
+    return DepartmentCreateResponse(playload=department)
 
 
 @router.get(
     "/departments/department/{department_id}",
     status_code=status.HTTP_200_OK,
-    response_model=list[Department],
+    response_model=DepartmentListResponse,
 )
 async def get_subdepartments(
-    request: Request,
-    department_id: int,
+    # request: Request,
+    # department_id: int,
+    department: Department = Depends(valid_department),
     department_service: DepartmentService = Depends(DepartmentService),
 ) -> None:
-    return await department_service.get_subdepartments(
-        request.state.company_id,
-        request.state.is_admin,
-        department_id,
+    departments = await department_service.get_subdepartments(
+        department,
     )
+    return DepartmentListResponse(playload=departments)
 
 
 @router.patch(
     "/departments/department/{department_id}",
     status_code=status.HTTP_200_OK,
-    response_model=Department,
+    response_model=DepartmentResponse,
 )
 async def update_department(
-    request: Request,
-    department_id: int,
-    department_data: DepartmentUpdate,
+    # department_id: int,
+    department_data: DepartmentUpdateRequest,
+    # user: User = Depends(is_admin),
+    department: Department = Depends(valid_department),
     department_service: DepartmentService = Depends(DepartmentService),
 ) -> None:
-    return await department_service.update(
-        request.state.company_id,
-        request.state.is_admin,
-        department_id,
+    department = await department_service.update(
+        department,
         department_data,
     )
+    return DepartmentResponse(playload=department)
 
 
 @router.delete(
@@ -95,12 +106,23 @@ async def update_department(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_department(
-    request: Request,
-    department_id: int,
+    # department_id: int,
+    # user: User = Depends(is_admin),
+    department: Department = Depends(valid_department),
     department_service: DepartmentService = Depends(DepartmentService),
 ) -> None:
-    return await department_service.delete(
-        request.state.company_id,
-        request.state.is_admin,
-        department_id,
-    )
+    return await department_service.delete(department)
+
+
+@router.patch(
+    "/departments/department/{department_id}/appoint-head",
+    status_code=status.HTTP_200_OK,
+    response_model=DepartmentResponse,
+)
+async def appoint_head(
+    head_id: UUID = Form(...),
+    department: Department = Depends(valid_department),
+    department_service: DepartmentService = Depends(DepartmentService),
+):
+    department = await department_service.add_head(department, head_id)
+    return DepartmentResponse(playload=department)

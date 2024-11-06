@@ -41,7 +41,7 @@ class DepartmentRepository(SqlAlchemyRepository):
             )
             .values(
                 path=text(
-                    f"'{parent_path or ''}' || subpath(path, nlevel('{delete_path!s}'))",
+                    f"'{parent_path or ''}' || subpath(path, nlevel('{delete_path}'))",
                 ),
             )
         )

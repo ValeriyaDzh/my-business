@@ -1,5 +1,7 @@
 from pydantic import BaseModel, EmailStr
 
+from src.schemas.base import BaseResponse
+
 
 class SignIn(BaseModel):
     email: EmailStr
@@ -9,3 +11,7 @@ class SignIn(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+
+class SigninResponse(BaseResponse):
+    playload: Token
