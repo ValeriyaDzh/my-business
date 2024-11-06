@@ -65,8 +65,6 @@ class DepartmentService(BaseService):
     @transaction_mode
     async def update(
         self,
-        # company_id: UUID,
-        # department_id: int,
         department: Department,
         data: DepartmentUpdateRequest,
     ) -> Department:
@@ -98,7 +96,16 @@ class DepartmentService(BaseService):
         return updated_department.to_pydantic_schema()
 
     @transaction_mode
+    async def add_head(self, department: Department, head_of_dep: UUID) -> Department:
+        updated_department: Department = (
+            await self.uow.department_repository.update_one_by_id(
+                department.id, head_id=head_of_dep,
+            )
+        )
+        return updated_department.to_pydantic_schema()
+
+    @transaction_mode
     async def get_by_id(self, department_id: int) -> Department:
         return await self.uow.department_repository.get_by_id_with_selectinload(
-            department_id, "positions"
+            department_id, "positions",
         )

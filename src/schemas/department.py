@@ -10,6 +10,7 @@ class DepartmentSchema(BaseModel):
     name: str
     company_id: UUID
     parent_id: int | None
+    head_id: UUID | None
 
     class Config:
         from_attributes = True
