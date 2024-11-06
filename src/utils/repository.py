@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING, Any, TypeVar
 from uuid import UUID
 
 from sqlalchemy import and_, delete, insert, select, update
-from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from src.models import Base
 
@@ -41,7 +41,7 @@ class SqlAlchemyRepository:
     async def get_by_field(
         self,
         key: str,
-        value: str,
+        value: Any,
         _all: bool = False,
     ) -> T | Sequence[T] | None:
         query = select(self.model).where(and_(getattr(self.model, key) == value))
@@ -50,6 +50,14 @@ class SqlAlchemyRepository:
         if _all:
             return res.scalars().all()
 
+        return res.scalar_one_or_none()
+
+    async def get_by_filters(
+        self,
+        **kwargs: Any,
+    ) -> T | None:
+        query = select(self.model).filter_by(**kwargs)
+        res: Result = await self.session.execute(query)
         return res.scalar_one_or_none()
 
     async def update_one_by_id(self, obj_id: UUID, **kwargs: Any) -> T | None:
@@ -67,7 +75,7 @@ class SqlAlchemyRepository:
         await self.session.execute(query)
 
     async def get_by_id_with_selectinload(
-        self, obj_id: int, field_to_load: Any
+        self, obj_id: int, field_to_load: Any,
     ) -> Sequence[T]:
         query = (
             select(self.model)
