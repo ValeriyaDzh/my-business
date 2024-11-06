@@ -1,8 +1,10 @@
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, Form, Request, status
 
 from src.api.v1.dependencies import is_admin, valid_department
 from src.api.v1.services import DepartmentService
-from src.models import User, Department
+from src.models import Department, User
 from src.schemas.department import (
     DepartmentCreateResponse,
     DepartmentListResponse,
@@ -110,3 +112,17 @@ async def delete_department(
     department_service: DepartmentService = Depends(DepartmentService),
 ) -> None:
     return await department_service.delete(department)
+
+
+@router.patch(
+    "/departments/department/{department_id}/appoint-head",
+    status_code=status.HTTP_200_OK,
+    response_model=DepartmentResponse,
+)
+async def appoint_head(
+    head_id: UUID = Form(...),
+    department: Department = Depends(valid_department),
+    department_service: DepartmentService = Depends(DepartmentService),
+):
+    department = await department_service.add_head(department, head_id)
+    return DepartmentResponse(playload=department)
