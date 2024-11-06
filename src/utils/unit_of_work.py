@@ -9,6 +9,9 @@ from src.repositories import (
     DepartmentPositionRepository,
     DepartmentRepository,
     PositionRepository,
+    TaskExecutorsRepository,
+    TaskObserversRepository,
+    TaskRepository,
     UserRepository,
 )
 from src.utils.custom_types import AsyncFunc
@@ -27,6 +30,9 @@ class UnitOfWork:
         self.department_position_repository = DepartmentPositionRepository(self.session)
         self.department_repository = DepartmentRepository(self.session)
         self.position_repository = PositionRepository(self.session)
+        self.task_repository = TaskRepository(self.session)
+        self.task_executors_repository = TaskExecutorsRepository(self.session)
+        self.task_observers_repository = TaskObserversRepository(self.session)
         self.user_repository = UserRepository(self.session)
         return self
 
