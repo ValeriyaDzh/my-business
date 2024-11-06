@@ -3,8 +3,8 @@ import logging
 from fastapi import HTTPException, Request
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer
-from starlette.middleware.base import BaseHTTPMiddleware
 from jose import JWTError
+from starlette.middleware.base import BaseHTTPMiddleware
 
 from src.api.v1.services import UserService
 from src.models import User
